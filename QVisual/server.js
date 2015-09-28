@@ -25,11 +25,28 @@ app.listen('3000', function () {
  * 
  */
 
-//var qm = require('qminer');
+var qm = require('qminer');
 
-//var basePath = '../database/'
-//var base = new qm.Base({
-//    mode: 'openReadOnly',
-//    dbPath: basePath + "QMinerAcademics/"
-//});
+var basePath = './database/'
+var base = new qm.Base({
+    mode: 'openReadOnly',
+    dbPath: basePath + "QMinerAcademics/"
+});
 
+
+
+
+
+
+
+
+
+
+
+
+process.on('SIGINT', function () {
+    // close the base
+    base.close();
+    // exit the process
+    process.exit();
+});

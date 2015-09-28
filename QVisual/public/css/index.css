@@ -1,0 +1,66 @@
+﻿/* ########################################################
+    index page stype
+######################################################## */
+
+body {
+    background: #ffffff;
+    margin: 0;
+    height: 100%;
+    color: #384452;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+}
+
+#navbarheadertext {
+    color: #ffffff;
+}
+
+#searchbarandbutton {
+    padding: 10px 10px 10px 10px;
+}
+
+#searchbarcontainer {
+    background-color: #f1f1f1;
+}
+
+/* ########################################################
+    navbar page style
+######################################################## */
+
+.navbar {
+    min-height: 70px;
+    margin-bottom: 0px;
+}
+
+.navbar-brand {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+}
+
+.navbar-header .navbar-brand {
+    color: white;
+}
+
+.navbar-default {
+    background-color: #23241f;
+    border-color: transparent;
+}
+
+
+/* ########################################################
+    Graph div
+######################################################## */
+
+.graph {
+    padding: 10px 10px 10px 10px;
+}
+
+    .graph rect {
+        fill: steelblue;
+    }
+
+    .graph text {
+        fill: white;
+        font: 10px sans-serif;
+        text-anchor: end;
+    }

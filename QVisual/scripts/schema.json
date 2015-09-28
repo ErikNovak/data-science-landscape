@@ -7,6 +7,9 @@
         ],
         "joins": [
             { "name": "hasWritten", "type": "index", "store": "Papers", "inverse": "hasAuthors" }
+        ],
+        "keys": [
+            { "field": "name", "type": "text" }
         ]
     },
 
@@ -18,6 +21,9 @@
         ],
         "joins": [
             { "name": "inPaper", "type": "index", "store": "Papers", "inverse": "hasAffiliations" }
+        ],
+        "keys": [
+            { "field": "name", "type": "text" }
         ]
     },
 
@@ -29,7 +35,7 @@
             { "name": "normalizedPaperTitle", "type": "string", "store": "cache" },
             { "name": "paperPublishYear", "type": "int", "store": "cache" },
             { "name": "paperPublishDate", "type": "string", "store": "cache", "nullable": true },
-            { "name": "DOI", "type": "string",  "store": "cache", "nullable": true },
+            { "name": "DOI", "type": "string", "store": "cache", "nullable": true },
             { "name": "originalVenueName", "type": "string", "store": "cache", "nullable": true },
             { "name": "normalizedVenueName", "type": "string", "store": "cache" },
             { "name": "paperRank", "type": "int", "store": "cache" }
@@ -41,6 +47,11 @@
             { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inPapers" },
             { "name": "wasPublishedIn", "type": "index", "store": "Journals", "inverse": "hasPapers" },
             { "name": "hasURL", "type": "field", "store": "PaperURLs", "inverse": "connectsToPaper" }
+        ],
+        "keys": [
+            { "field": "originalPaperTitle", "type": "string" },
+            { "field": "paperPublishYear", "type": "value" },
+            { "field": "paperRank", "type": "value" }
         ]
     },
 
@@ -62,6 +73,9 @@
         "joins": [
             { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasKeywords" },
             { "name": "inFieldOfStudy", "type": "field", "store": "FieldsOfStudy", "inverse": "hasKeywords" }
+        ],
+        "keys": [
+            { "field": "keyword", "type": "text" }
         ]
     },
 
@@ -73,6 +87,9 @@
         ],
         "joins": [
             { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inFieldOfStudy" }
+        ],
+        "keys": [
+            { "field": "name", "type": "text" }
         ]
     },
 
@@ -84,6 +101,9 @@
         ],
         "joins": [
             { "name": "hasPapers", "type": "index", "store": "Papers", "inverse": "wasPublishedIn" }
+        ],
+        "keys": [
+            { "field": "name", "type": "text" }
         ]
     },
 
