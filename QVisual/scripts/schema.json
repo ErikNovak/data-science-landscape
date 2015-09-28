@@ -1,0 +1,116 @@
+[
+    {
+        "name": "Authors",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "name", "type": "string", "store": "cache", "nullable": true }
+        ],
+        "joins": [
+            { "name": "hasWritten", "type": "index", "store": "Papers", "inverse": "hasAuthors" }
+        ]
+    },
+
+    {
+        "name": "Affiliations",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "name", "type": "string", "store": "cache" }
+        ],
+        "joins": [
+            { "name": "inPaper", "type": "index", "store": "Papers", "inverse": "hasAffiliations" }
+        ]
+    },
+
+    {
+        "name": "Papers",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "originalPaperTitle", "type": "string", "store": "cache" },
+            { "name": "normalizedPaperTitle", "type": "string", "store": "cache" },
+            { "name": "paperPublishYear", "type": "int", "store": "cache" },
+            { "name": "paperPublishDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "DOI", "type": "string",  "store": "cache", "nullable": true },
+            { "name": "originalVenueName", "type": "string", "store": "cache", "nullable": true },
+            { "name": "normalizedVenueName", "type": "string", "store": "cache" },
+            { "name": "paperRank", "type": "int", "store": "cache" }
+        ],
+        "joins": [
+            { "name": "hasAuthors", "type": "index", "store": "Authors", "inverse": "hasWritten" },
+            { "name": "hasAffiliations", "type": "index", "store": "Affiliations", "inverse": "inPaper" },
+            { "name": "hasReferences", "type": "index", "store": "PaperReferences", "inverse": "referencedIn" },
+            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inPapers" },
+            { "name": "wasPublishedIn", "type": "index", "store": "Journals", "inverse": "hasPapers" },
+            { "name": "hasURL", "type": "field", "store": "PaperURLs", "inverse": "connectsToPaper" }
+        ]
+    },
+
+    {
+        "name": "PaperReferences",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true }
+        ],
+        "joins": [
+            { "name": "referencedIn", "type": "index", "store": "Papers", "inverse": "hasReferences" }
+        ]
+    },
+
+    {
+        "name": "PaperKeywords",
+        "fields": [
+            { "name": "keyword", "type": "string", "store": "cache", "primary": true }
+        ],
+        "joins": [
+            { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasKeywords" },
+            { "name": "inFieldOfStudy", "type": "field", "store": "FieldsOfStudy", "inverse": "hasKeywords" }
+        ]
+    },
+
+    {
+        "name": "FieldsOfStudy",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "name", "type": "string", "store": "cache" }
+        ],
+        "joins": [
+            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inFieldOfStudy" }
+        ]
+    },
+
+    {
+        "name": "Journals",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "name", "type": "string", "store": "cache" }
+        ],
+        "joins": [
+            { "name": "hasPapers", "type": "index", "store": "Papers", "inverse": "wasPublishedIn" }
+        ]
+    },
+
+    {
+        "name": "PaperURLs",
+        "fields": [
+            { "name": "URL", "type": "string", "store": "cache" }
+        ],
+        "joins": [
+            { "name": "connectsToPaper", "type": "field", "store": "Papers", "inverse": "hasURL" }
+        ]
+    },
+
+    {
+        "name": "Conferences",
+        "fields": [
+            { "name": "ID", "type": "string", "primary": true },
+            { "name": "abbreviation", "type": "string", "store": "cache" },
+            { "name": "name", "type": "string", "store": "cache" },
+            { "name": "location", "type": "string", "store": "cache" },
+            { "name": "URL", "type": "string", "store": "cache", "nullable": true },
+            { "name": "startDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "endDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "abstractRegistrationDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "submissionDeadlineDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "notificationDueDate", "type": "string", "store": "cache", "nullable": true },
+            { "name": "finalVersionDueDate", "type": "string", "store": "cache", "nullable": true }
+        ]
+    }
+]

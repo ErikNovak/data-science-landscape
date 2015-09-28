@@ -1,0 +1,16 @@
+{
+  "name": "QVisual",
+  "version": "0.0.0",
+  "description": "QVisual",
+  "main": "server.js",
+  "author": {
+    "name": "Erik",
+    "email": ""
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "fs": "0.0.2",
+    "path": "^0.12.7",
+    "qminer": "^2.4.0"
+  }
+}
