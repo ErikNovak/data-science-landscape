@@ -81,7 +81,7 @@ while (!JournalsIn.eof) {
         // write the Journals and update the counter
         JournalsOut.write(JournalsLine + '\n');
         counterJournals++;
-        console.log(counterJournals);
+        process.stdout.write("Number of journals: " + counterJournals + "\r");
     }
 }
 JournalsOut.close();
@@ -102,7 +102,7 @@ while (!KeywordsIn.eof) {
         KeywordsOut.write(KeywordsLine + '\n');
         FieldsOfStudyID.put(KeywordsLineSplit[2], 0);
         counterKeywords++;
-        console.log(counterKeywords);
+        process.stdout.write("Number of Keywords: " + counterKeywords + "\r");
     }
 }
 KeywordsOut.close();
@@ -121,7 +121,7 @@ while (!FieldsOfStudyIn.eof) {
         // write the Fields and update the counter
         FieldsOfStudyOut.write(FieldsLine + '\n');
         counterFieldsOfStudy++;
-        console.log(counterFieldsOfStudy);
+        process.stdout.write("Number of Fields of Study: " + counterFieldsOfStudy + "\r");
     }
 }
 FieldsOfStudyOut.close();
@@ -145,7 +145,7 @@ while (!PapersAuthorAffiliationsIn.eof) {
         AuthorID.put(APALineSplit[1], 0);
         AffiliatonsID.put(APALineSplit[2], 0);
         counterAPA++;
-        console.log(counterAPA);
+        process.stdout.write("Number of PaperAuthorAffiliations: " + counterAPA + "\r");
     }
 
 }
@@ -165,7 +165,7 @@ while (!AuthorIn.eof) {
         // write the author
         AuthorOut.write(AuthorLine + '\n');
         counterAuthor++;
-        console.log(counterAuthor);
+        process.stdout.write("Number of Authors: " + counterAuthor + "\r");
     }
 
 }
@@ -185,7 +185,7 @@ while (!AffiliationsIn.eof) {
         // write the author
         AffiliationsOut.write(AffLine + '\n');
         counterAff++;
-        console.log(counterAff);
+        process.stdout.write("Number of Affiliations: " + counterAff + "\r");
     }
 
 }
@@ -207,7 +207,7 @@ if (allData) {
             // write the author
             ReferencesOut.write(RefLine + '\n');
             counterRef++;
-            console.log(counterRef);
+            process.stdout.write("Number of PaperReferences: " + counterRef + "\r");
         }
     }
     ReferencesOut.close();
@@ -226,7 +226,7 @@ if (allData) {
             // write the author
             PaperURLOut.write(URLLine + '\n');
             counterURL++;
-            console.log(counterURL);
+            process.stdout.write("Number of PaperURL: " + counterURL + "\r");
         }
     }
     PaperURLOut.close();

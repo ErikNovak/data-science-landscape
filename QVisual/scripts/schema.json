@@ -45,13 +45,12 @@
             { "name": "hasAffiliations", "type": "index", "store": "Affiliations", "inverse": "inPaper" },
             { "name": "hasReferences", "type": "index", "store": "PaperReferences", "inverse": "referencedIn" },
             { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inPapers" },
+            { "name": "hasFieldsOfStudy", "type": "index", "store": "FieldsOfStudy", "inverse":  "inPapers" },
             { "name": "wasPublishedIn", "type": "index", "store": "Journals", "inverse": "hasPapers" },
             { "name": "hasURL", "type": "field", "store": "PaperURLs", "inverse": "connectsToPaper" }
         ],
         "keys": [
-            { "field": "originalPaperTitle", "type": "string" },
-            { "field": "paperPublishYear", "type": "value" },
-            { "field": "paperRank", "type": "value" }
+            { "field": "originalPaperTitle", "type": "text" }
         ]
     },
 
@@ -68,14 +67,14 @@
     {
         "name": "PaperKeywords",
         "fields": [
-            { "name": "keyword", "type": "string", "store": "cache", "primary": true }
+            { "name": "name", "type": "string", "store": "cache", "primary": true }
         ],
         "joins": [
             { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasKeywords" },
             { "name": "inFieldOfStudy", "type": "field", "store": "FieldsOfStudy", "inverse": "hasKeywords" }
         ],
         "keys": [
-            { "field": "keyword", "type": "text" }
+            { "field": "name", "type": "value" }
         ]
     },
 
@@ -86,10 +85,11 @@
             { "name": "name", "type": "string", "store": "cache" }
         ],
         "joins": [
-            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inFieldOfStudy" }
+            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inFieldOfStudy" },
+            { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasFieldsOfStudy" }
         ],
         "keys": [
-            { "field": "name", "type": "text" }
+            { "field": "name", "type": "value" }
         ]
     },
 

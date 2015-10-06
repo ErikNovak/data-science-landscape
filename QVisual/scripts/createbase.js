@@ -91,13 +91,16 @@ while (!KeywordsIn.eof) {
     var paperID = keywordsData[0];
     var keyword = keywordsData[1];
     var fieldOfStudyID = keywordsData[2];
-
-    base.store("PaperKeywords").push({ keyword: keyword });
+    
+    base.store("PaperKeywords").push({ name: keyword });
     if (base.store("Papers").recordByName(paperID) != null) {
         base.store("PaperKeywords").recordByName(keyword).$addJoin("inPapers", base.store("Papers").recordByName(paperID));
     }
     if (base.store("FieldsOfStudy").recordByName(fieldOfStudyID) != null) {
         base.store("PaperKeywords").recordByName(keyword).$addJoin("inFieldOfStudy", base.store("FieldsOfStudy").recordByName(fieldOfStudyID));
+    }
+    if (base.store("FieldsOfStudy").recordByName(fieldOfStudyID) != null) {
+        base.store("FieldsOfStudy").recordByName(fieldOfStudyID).$addJoin("inPapers", base.store("Papers").recordByName(paperID));
     }
 }
 
@@ -107,7 +110,7 @@ while (!PapersAuthorAffiliationsIn.eof) {
     var paperID = PAPData[0];
     var authorID = PAPData[1];
     var affiliationID = PAPData[2];
-    if (base.store("Authors").recordByName(authorID) != null) { 
+    if (base.store("Authors").recordByName(authorID) != null) {
         base.store("Papers").recordByName(paperID).$addJoin("hasAuthors", base.store("Authors").recordByName(authorID));
     }
     if (base.store("Affiliations").recordByName(affiliationID) != null) {
