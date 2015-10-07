@@ -30,12 +30,15 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="datajsonification\timeseries.js" />
     <Compile Include="public\js\bootstrap.js" />
     <Compile Include="public\js\bootstrap.min.js" />
     <Compile Include="public\js\d3.js" />
     <Compile Include="public\js\d3.min.js" />
+    <Compile Include="public\js\QVisual\streamGraph.js" />
+    <Compile Include="public\js\QVisual\utility.js" />
     <Compile Include="public\js\index.js" />
-    <Compile Include="public\js\QVisual.js" />
+    <Compile Include="public\js\QVisual\stackedBarsGraph.js" />
     <Compile Include="public\js\npm.js" />
     <Compile Include="scripts\createbase.js" />
     <Compile Include="scripts\createsubset.js" />
@@ -165,11 +168,13 @@
     <Folder Include="database\MicrosoftAcademicGraph\" />
     <Folder Include="database\MicrosoftAcademicSubset\" />
     <Folder Include="database\QMinerAcademics\" />
+    <Folder Include="datajsonification\" />
     <Folder Include="public\" />
     <Folder Include="public\css\" />
     <Folder Include="public\fonts\" />
     <Folder Include="public\html\" />
     <Folder Include="public\js\" />
+    <Folder Include="public\js\QVisual\" />
     <Folder Include="scripts\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->

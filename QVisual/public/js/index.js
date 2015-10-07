@@ -40,7 +40,7 @@ function drawChart() {
         success: function (data) {
 
             json = data.values;
-            drawTimeseries(data.values, data.options);
+            drawStackedBars(data.values, data.options);
         }
     })
 }

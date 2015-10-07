@@ -80,8 +80,6 @@ body {
     Chart div
 ######################################################## */
 
-
-
 #graphcontainer {
     width: 90%;
     height: 540px;
@@ -95,6 +93,14 @@ body {
 /* ################################
     timeseries div
 ################################ */
+
+.legend {
+    font-size: 12px;
+}
+
+ rect {
+    stroke-width: 2;
+  }
 
 .axis path,
 .axis line {
