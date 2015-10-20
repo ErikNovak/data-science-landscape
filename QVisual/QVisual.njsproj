@@ -30,17 +30,18 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="datajsonification\timeseries.js" />
+    <Compile Include="dataformat\dataformat.js" />
     <Compile Include="public\js\bootstrap.js" />
-    <Compile Include="public\js\bootstrap.min.js" />
     <Compile Include="public\js\d3.js" />
-    <Compile Include="public\js\d3.min.js" />
     <Compile Include="public\js\QVisual\streamGraph.js" />
     <Compile Include="public\js\QVisual\utility.js" />
     <Compile Include="public\js\index.js" />
     <Compile Include="public\js\QVisual\stackedBarsGraph.js" />
     <Compile Include="public\js\npm.js" />
+    <Compile Include="public\js\utility\additionaloptions.js" />
+    <Compile Include="public\js\utility\dropdown.js" />
     <Compile Include="scripts\createbase.js" />
+    <Compile Include="scripts\createsciencesubset.js" />
     <Compile Include="scripts\createsubset.js" />
     <Compile Include="server.js" />
     <Content Include="database\MicrosoftAcademicGraph\Affiliations.txt" />
@@ -148,11 +149,7 @@
     <Content Include="database\QMinerAcademics\StoreList.json" />
     <Content Include="package.json" />
     <Content Include="public\css\bootstrap-theme.css" />
-    <Content Include="public\css\bootstrap-theme.css.map" />
-    <Content Include="public\css\bootstrap-theme.min.css" />
     <Content Include="public\css\bootstrap.css" />
-    <Content Include="public\css\bootstrap.css.map" />
-    <Content Include="public\css\bootstrap.min.css" />
     <Content Include="public\css\index.css" />
     <Content Include="public\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="public\fonts\glyphicons-halflings-regular.svg" />
@@ -168,12 +165,13 @@
     <Folder Include="database\MicrosoftAcademicGraph\" />
     <Folder Include="database\MicrosoftAcademicSubset\" />
     <Folder Include="database\QMinerAcademics\" />
-    <Folder Include="datajsonification\" />
+    <Folder Include="dataformat\" />
     <Folder Include="public\" />
     <Folder Include="public\css\" />
     <Folder Include="public\fonts\" />
     <Folder Include="public\html\" />
     <Folder Include="public\js\" />
+    <Folder Include="public\js\utility\" />
     <Folder Include="public\js\QVisual\" />
     <Folder Include="scripts\" />
   </ItemGroup>

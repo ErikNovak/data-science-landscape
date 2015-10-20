@@ -12,8 +12,8 @@ var drawStackedBars = function (data, options) {
     var SamplesN = MinMaxYears.max - MinMaxYears.min;
     
     var margin = options.margin;
-    var width = $("#graphcontainer").width() - margin.left - margin.right,
-        height = $("#graphcontainer").height() - margin.top - margin.bottom;
+    var width = $("#graph-container").width() - margin.left - margin.right,
+        height = $("#graph-container").height() - margin.top - margin.bottom;
     
     var x = d3.scale.ordinal()
         .domain(d3.range(MinMaxYears.min, MinMaxYears.max + 1))
@@ -22,10 +22,10 @@ var drawStackedBars = function (data, options) {
     var y = d3.scale.linear()
         .domain([0, getMaxValue(data)])
         .range([height, 0]);
-    
+
     // scale for the x axis
     var xLabel = d3.scale.ordinal()
-        .domain(d3.range(MinMaxYears.min, MinMaxYears.max + 1, 4))
+        .domain(d3.range(MinMaxYears.min, MinMaxYears.max + 1, 10))
         .rangeBands([0, width], .08);
     
     // set the color range for the layers
@@ -46,7 +46,7 @@ var drawStackedBars = function (data, options) {
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.right + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
     // create the layers
     var layer = svg.selectAll(".layer")

@@ -6,13 +6,14 @@ body {
     height: 100%;
     width: 100%;
     background-color: #e6e6e6;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode';
 }
 
 /* ########################################################
     navbar page style
 ######################################################## */
 
-.navbarHeadliner {
+.navbar-headliner {
     color: #ffffff;
 }
 
@@ -37,76 +38,147 @@ body {
 }
 
 /* ########################################################
-    Input and dropdown menu style
+    Search bar and dropdown menu style
 ######################################################## */
 
-#searchContainer {
+#search-container {
     padding: 20px 10px 20px 10px;
     background-color: #DDD;
 }
 
-.form-control {
+#search-input, .tokenfield {
     border-color: #6375fc;
     border-width: 2px;
 }
+ 
+#ui-id-1 {
+    overflow: auto;
+    height: 200px;
+    width: 200px;
+}
+
+    /* ########################
+       Tokens in search bar
+    ######################## */
+
+.tokenfield .token {
+    text-align:center;
+    background-color: #6375fc;
+    color: white;
+}
+.tokenfield .token .close {
+    color: white;
+}
+
+    /* ########################
+        Buttons
+    ######################## */
 
 .btn, .btn:focus, .btn:hover {
     background-color: #6375fc;
     color: #ffffff;
-    font-weight:400;
+    font-weight: 400;
 }
 
-.btn:active, .btn.active {
-    color: #FFF;
+    .btn:active, .btn.active {
+        color: #FFF;
+    }
+
+    .btn:hover {
+        background-color: #808ffe;
+    }
+
+    /* ########################
+        Additional options
+    ######################## */
+
+#additional-options {
+    padding: 10px 20px 10px 20px;
+    background-color: #DDD;
 }
 
-.btn:hover {
-    background-color: #808ffe;
-}
+    #additional-options .form-group .control-label {
+        font-weight: 100;
+    }
 
 /* ########################################################
     Dropdown div
 ######################################################## */
 
-#dropdownSelectorContainer {
+#dropdown-container {
     width: 100%;
     height: 80px;
-    max-height: 80px;
-    position: center;
     background-color: #BBB;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 20px;
+}
+
+#dropdown-selector .btn {
+    font-size: 20px;
 }
 
 /* ########################################################
     Chart div
 ######################################################## */
 
-#graphcontainer {
-    width: 90%;
+#graph-container {
+    width: 80%;
     height: 540px;
     max-height: 540px;
-    background-color: white;
     border-radius: 5px;
     margin-top: 50px;
     margin-bottom: 30px;
+    display: none;
+    position: relative;
 }
 
 /* ################################
-    timeseries div
+    wait container
 ################################ */
+
+.wait-container {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+/* ################################
+    timestream div
+################################ */
+
+#svg-canvas {
+    border-radius: 5px;
+    background-color: white;
+}
+
+.graph-tooltip {
+    position: absolute;
+    display:block;
+    color: white;
+    height: auto;
+    width:auto;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: rgb(105, 105, 105);
+}
+
+.notvisible {
+    display: block;
+    visibility: hidden;
+}
 
 .legend {
     font-size: 12px;
 }
 
- rect {
+rect {
     stroke-width: 2;
-  }
+}
 
 .axis path,
 .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
 }
-
-

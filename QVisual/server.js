@@ -28,54 +28,83 @@ app.listen('3000', function () {
  */
 
 var qm = require('qminer');
-var timeseries = require('./datajsonification/timeseries.js');
+var dataformat = require('./dataformat/dataformat.js');
 
 var basePath = './database/'
 var base = new qm.Base({
     mode: 'openReadOnly',
-    dbPath: basePath + "QMinerAcademics/"
+    dbPath: basePath + "QMinerAcademicsScience/"
 });
 
-// query the data from the data
-var queryData = function (storeName, searchData) {
-    var data = {};
-    for (var DataN = 0; DataN < searchData.length; DataN++) {
-        var query = { $from: storeName, name: searchData[DataN] };
+// query the data from the database
+var dataQuery = function (data) {
+    var result = [];
+    var store;
+    for (var DataN = 0; DataN < data.length; DataN++) {
+        // get the correct store name
+        if (data[DataN].type == "keyword") { store = "FieldsOfStudy" }
+        else if (data[DataN].type == "author") { store = "Authors" }
+        else if (data[DataN].type == "journal") { store = "Journals" }
+        // query the data
+        var query = { $from: store, normalizedName: data[DataN].value };
         var res = base.search(query);
-        data[searchData[DataN]] = res;
+        result.push({ value: data[DataN].label, type: data[DataN].type, subset: res })
     }
-    return data;
+    return result;
+}
+
+// query the data for autocomplete
+var autoQuery = function (data) {
+    
+    var result = [];
+    var stores = [
+        { store: "FieldsOfStudy", type: "keyword" },
+        { store: "Authors", type: "author" }
+    ];
+    for (var StoreN = 0; StoreN < stores.length; StoreN++) {
+        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
+        var res = base.search(query);
+        
+        var arr = res.map(function (record) {
+            var type = stores[StoreN].type;
+            var value = record.normalizedName;
+            var label = record.name;
+            return { type: type, value: value, label: label };
+        });
+        result = result.concat(arr);
+    }
+    return result;
 }
 
 
+// send the data to the cient
 app.post('/', function (request, response) {
+    
     var req = request.body;
-    var search = queryData(req.store, req.data);
-    // given options
-    var options = {
-        margin: {
-            top: 40, 
-            left: 30, 
-            bottom: 30, 
-            right: 30
-        }
-    };
-    var data = {
-        values: timeseries.keywords(search), 
-        options: options
-    };
-    response.send(data);
+    if (req.type == "autocomplete") {
+        // for getting the the autocomplete list
+        var auto = autoQuery(req);
+        response.send(auto);
+    } else {
+        // for showing the graphs
+        var search = dataQuery(req.data);
+        // given options
+        var options = {
+            containerNm: "#graph-container",
+            margin: {
+                top: 40, 
+                left: 30, 
+                bottom: 30, 
+                right: 30
+            }
+        };
+        var data = {
+            values: dataformat.jsonify(search),
+            options: options
+        };
+        response.send(data);
+    }
 })
-
-
-
-
-
-
-
-
-
-
 
 process.on('SIGINT', function () {
     // close the base

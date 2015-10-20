@@ -1,47 +1,39 @@
 ﻿
 // change the selected search value
-$(function () {
-    $(".dropdown-menu").on("click", "li a", function () {
-        $("#selected").text($(this).text());
-        $("#selected").val($(this).text());
-    })
-});
-
-var json;
-function drawChart() {
-    //get the search input
-    var searchValues = $("#searchInput").val();
-    var search = searchValues.split(",");
-    // get the data from the server
-    if (search.length == 1 && search[0] == '') {
-        return;
-    }
-    
-    // get the store for data querying
-    var store;
-    switch ($('#selected').text()) {
-        case 'Keywords': {
-            store = 'FieldsOfStudy';
-            break;
-        } case 'Authors': {
-            store = 'Authors';
-            break;
-        } case 'Journals': {
-            store = 'Journals';
-            break;
+var search = {
+    previousSearch: [],
+    drawChart : function () {
+        
+        //get the search input
+        var search_values = $("#search-input").tokenfield("getTokens");
+        // get the data from the server
+        if (search_values == [] || search.previousSearch === search_values) {
+            return;
         }
+        // set the previous search variables
+        search.previousSearch = search_values;
+        
+        $(".wait-container").show();
+        // send and recieve data
+        $.ajax({
+            type: 'POST',
+            url: '/',
+            data: { data: search_values },
+            success: function (data) {
+                $(".wait-container").hide();
+                // get the graph type
+                var graph = null;
+                switch ($('#graph-type').text()) {
+                    case 'Timestream chart': {
+                        graph = new streamGraph(data.options);
+                        break;
+                    } case 'Topic map (TODO)': {
+                        graph = new streamGraph(data.options);
+                        break;
+                    }
+                }
+                graph.setData(data.values);
+            }
+        })
     }
-
-    // send and recieve data
-    $.ajax({
-        type: 'POST',
-        url: '/',
-        data: { store: store, data: search },
-        success: function (data) {
-
-            json = data.values;
-            drawStackedBars(data.values, data.options);
-        }
-    })
 }
-

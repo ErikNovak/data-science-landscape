@@ -3,13 +3,14 @@
         "name": "Authors",
         "fields": [
             { "name": "ID", "type": "string", "primary": true },
-            { "name": "name", "type": "string", "store": "cache", "nullable": true }
+            { "name": "name", "type": "string", "store": "cache", "nullable": true },
+            { "name": "normalizedName", "type": "string", "store": "cache", "nullable": true }
         ],
         "joins": [
             { "name": "hasWritten", "type": "index", "store": "Papers", "inverse": "hasAuthors" }
         ],
         "keys": [
-            { "field": "name", "type": "text" }
+            { "field": "normalizedName", "type": "value" }
         ]
     },
 
@@ -17,13 +18,15 @@
         "name": "Affiliations",
         "fields": [
             { "name": "ID", "type": "string", "primary": true },
-            { "name": "name", "type": "string", "store": "cache" }
+            { "name": "name", "type": "string", "store": "cache" },
+            { "name": "normalizedName", "type": "string", "store": "cache", "nullable": true }
+
         ],
         "joins": [
             { "name": "inPaper", "type": "index", "store": "Papers", "inverse": "hasAffiliations" }
         ],
         "keys": [
-            { "field": "name", "type": "text" }
+            { "field": "normalizedName", "type": "value" }
         ]
     },
 
@@ -44,13 +47,11 @@
             { "name": "hasAuthors", "type": "index", "store": "Authors", "inverse": "hasWritten" },
             { "name": "hasAffiliations", "type": "index", "store": "Affiliations", "inverse": "inPaper" },
             { "name": "hasReferences", "type": "index", "store": "PaperReferences", "inverse": "referencedIn" },
-            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inPapers" },
             { "name": "hasFieldsOfStudy", "type": "index", "store": "FieldsOfStudy", "inverse":  "inPapers" },
-            { "name": "wasPublishedIn", "type": "index", "store": "Journals", "inverse": "hasPapers" },
-            { "name": "hasURL", "type": "field", "store": "PaperURLs", "inverse": "connectsToPaper" }
+            { "name": "wasPublishedIn", "type": "index", "store": "Journals", "inverse": "hasPapers" }
         ],
         "keys": [
-            { "field": "originalPaperTitle", "type": "text" }
+            { "field": "originalPaperTitle", "type": "value" }
         ]
     },
 
@@ -65,31 +66,17 @@
     },
 
     {
-        "name": "PaperKeywords",
-        "fields": [
-            { "name": "name", "type": "string", "store": "cache", "primary": true }
-        ],
-        "joins": [
-            { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasKeywords" },
-            { "name": "inFieldOfStudy", "type": "field", "store": "FieldsOfStudy", "inverse": "hasKeywords" }
-        ],
-        "keys": [
-            { "field": "name", "type": "value" }
-        ]
-    },
-
-    {
         "name": "FieldsOfStudy",
         "fields": [
             { "name": "ID", "type": "string", "primary": true },
-            { "name": "name", "type": "string", "store": "cache" }
+            { "name": "name", "type": "string", "store": "cache" },
+            { "name": "normalizedName", "type": "string", "store": "cache" }
         ],
         "joins": [
-            { "name": "hasKeywords", "type": "index", "store": "PaperKeywords", "inverse": "inFieldOfStudy" },
             { "name": "inPapers", "type": "index", "store": "Papers", "inverse": "hasFieldsOfStudy" }
         ],
         "keys": [
-            { "field": "name", "type": "value" }
+            { "field": "normalizedName", "type": "value" }
         ]
     },
 
@@ -97,23 +84,14 @@
         "name": "Journals",
         "fields": [
             { "name": "ID", "type": "string", "primary": true },
-            { "name": "name", "type": "string", "store": "cache" }
+            { "name": "name", "type": "string", "store": "cache" },
+            { "name": "normalizedName", "type": "string", "store": "cache" }
         ],
         "joins": [
             { "name": "hasPapers", "type": "index", "store": "Papers", "inverse": "wasPublishedIn" }
         ],
         "keys": [
-            { "field": "name", "type": "text" }
-        ]
-    },
-
-    {
-        "name": "PaperURLs",
-        "fields": [
-            { "name": "URL", "type": "string", "store": "cache" }
-        ],
-        "joins": [
-            { "name": "connectsToPaper", "type": "field", "store": "Papers", "inverse": "hasURL" }
+            { "field": "normalizedName", "type": "value" }
         ]
     },
 
