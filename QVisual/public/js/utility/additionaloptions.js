@@ -12,7 +12,7 @@ $(function () {
 });
 
 // toggles the visibility of the additional options container
-function toggleOptions() {
+function toggleAdditional() {
     var button = $("#options");
     if (button.attr("data-value") == "right") {
         button.removeClass("glyphicon-chevron-right")
@@ -30,7 +30,12 @@ function toggleOptions() {
 var availableTopics = undefined;
 var autoCompleteTimeout = null;
 $(function () {
-    $("#search-input").tokenfield();
+    $("#search-input").tokenfield({
+        autocomplete: {
+            source: [],
+            delay: 0
+        }
+    });
     $(".token-input").on("input", function () {
         var topic = $(this).val();
         window.clearTimeout(autoCompleteTimeout);
@@ -63,5 +68,17 @@ $(function () {
                 event.preventDefault();
             }
         });
+    });
+    $("#search-input").on('tokenfield:createdtoken', function (event) {
+        var icon;
+        if (event.attrs.type == "keyword") {
+            // set for the keyword icon
+            icon = "class=' glyphicon glyphicon-tag' aria-hidden='true'";
+        } else if (event.attrs.type == "author") {
+            // set for the author icon
+            icon = "class=' glyphicon glyphicon-user' aria-hidden='true'";
+        }
+        
+        $(event.relatedTarget).prepend("<span class='token-label'><span " + icon + "></span></span>");
     });
 });

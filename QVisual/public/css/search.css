@@ -1,0 +1,202 @@
+﻿/* ########################################################
+    index page style
+######################################################## */
+
+body {
+    height: 100%;
+    width: 100%;
+    background-color: #e6e6e6;
+}
+
+/* ########################################################
+    navbar page style
+######################################################## */
+
+.navbar-headliner {
+    color: #ffffff;
+}
+
+.navbar {
+    min-height: 40px;
+    margin-bottom: 0px;
+    border-radius: 0px;
+}
+
+.navbar-brand {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+}
+
+.navbar-header .navbar-brand {
+    color: white;
+}
+
+.navbar-default {
+    background-color: #23241f;
+    border-color: transparent;
+}
+
+/* ########################################################
+    Search bar and dropdown menu style
+######################################################## */
+
+#search-container {
+    padding: 20px 10px 20px 10px;
+    background-color: #DDD;
+}
+
+#search-input, .tokenfield {
+    border-color: #6375fc;
+    border-width: 2px;
+}
+
+.ui-autocomplete {
+    float: left;
+    clear: both;
+    position: relative;
+    z-index: 50;
+    list-style: none;
+    background-color: #e6e6e6;
+    border: solid 1px groove;
+    text-align: left;
+    overflow-y: scroll;
+    max-height: 300px;
+    max-width: 300px;
+}
+.ui-autocomplete-input {
+    max-width: 300px;
+}
+
+/* ########################
+       Tokens in search bar
+    ######################## */
+
+.tokenfield .token {
+    height: 25px;
+    text-align: center;
+    background-color: #6375fc;
+    color: white;
+}
+
+.tokenfield .token .token-label {
+    vertical-align:middle;
+}
+
+    .tokenfield .token .close {
+        color: white;
+    }
+
+/* ########################
+        Buttons
+    ######################## */
+
+.btn, .btn:focus, .btn:hover {
+    background-color: #6375fc;
+    color: #ffffff;
+    font-weight: 400;
+}
+
+    .btn:active, .btn.active {
+        color: #FFF;
+    }
+
+    .btn:hover {
+        background-color: #808ffe;
+    }
+
+/* ########################
+        Additional options
+    ######################## */
+
+#additional-options {
+    padding: 10px 20px 10px 20px;
+    background-color: #DDD;
+}
+
+    #additional-options .form-group .control-label {
+        font-weight: 100;
+    }
+
+/* ########################################################
+    Dropdown div
+######################################################## */
+
+#dropdown-container {
+    width: 100%;
+    height: 80px;
+    background-color: #BBB;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 20px;
+}
+
+#dropdown-selector .btn {
+    font-size: 20px;
+}
+
+/* ########################################################
+    Chart div
+######################################################## */
+
+#graph-container {
+    width: 80%;
+    height: 540px;
+    max-height: 540px;
+    border-radius: 5px;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    display: none;
+    position: relative;
+}
+
+/* ################################
+    wait container
+################################ */
+
+.wait-content {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    height: 200px;
+    width: 100%;
+}
+
+/* ################################
+    timestream div
+################################ */
+
+#svg-canvas {
+    border-radius: 5px;
+    background-color: white;
+}
+
+.graph-tooltip {
+    position: absolute;
+    display: block;
+    color: white;
+    height: auto;
+    width: auto;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: rgb(105, 105, 105);
+}
+
+.notvisible {
+    display: block;
+    visibility: hidden;
+}
+
+.legend {
+    font-size: 12px;
+}
+
+rect {
+    stroke-width: 2;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
