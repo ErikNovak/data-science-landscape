@@ -40,7 +40,7 @@ $(function () {
         var topic = $(this).val();
         window.clearTimeout(autoCompleteTimeout);
         autoCompleteTimeout = window.setTimeout(function () {
-            if (topic.length < 4) {
+            if (topic.length < 2) {
                 return;
             }
             $.ajax({
