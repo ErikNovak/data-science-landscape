@@ -59,7 +59,8 @@ var autoQuery = function (data) {
     var result = [];
     var stores = [
         { store: "FieldsOfStudy", type: "keyword" },
-        { store: "Authors", type: "author" }
+        { store: "Authors", type: "author" },
+        { store: "Journals", type: "journal" }
     ];
     for (var StoreN = 0; StoreN < stores.length; StoreN++) {
         var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
@@ -71,7 +72,7 @@ var autoQuery = function (data) {
             var label = record.name;
             return { type: type, value: value, label: label };
         });
-        result = result.concat(arr);
+        result = result.concat(arr.slice(0, 5));
     }
     return result;
 }
@@ -90,7 +91,7 @@ app.post('/', function (request, response) {
         var search = dataQuery(req.data);
         // given options
         var options = {
-            containerNm: "#graph-container",
+            containerNm: ".graph-content",
             margin: {
                 top: 40, 
                 left: 30, 

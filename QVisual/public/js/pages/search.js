@@ -4,21 +4,21 @@ var search = {
     drawChart : function () {
         
         //get the search input
-        var search_values = $("#search-input").tokenfield("getTokens");
+        var search_values = $(".searchbar").tokenfield("getTokens");
         // get the data from the server
         if (search_values.length == 0) {
             return;
         }
         // hide the graph and show the wait icon
-        $("#graph-container").hide();
-        $(".wait-container").show();
+        $(".graph-content").hide();
+        $(".wait-content").show();
         // send and recieve data
         $.ajax({
             type: 'POST',
             url: '/',
             data: { data: search_values },
             success: function (data) {
-                $(".wait-container").hide();
+                $(".wait-content").hide();
                 // get the graph type
                 var graph = null;
                 switch ($('#graph-type').text()) {

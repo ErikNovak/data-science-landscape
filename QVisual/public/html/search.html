@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="/css/jquery/jquery-ui.min.css" />
 
     <!-- page style -->
+    <link rel="stylesheet" type="text/css" href="/css/graphs/streamGraph.css" />
+    <link rel="stylesheet" type="text/css" href="/css/pages/main_style.css" />
     <link rel="stylesheet" type="text/css" href="/css/pages/search.css" />
 
     <title>Data Science</title>
@@ -19,47 +21,59 @@
     <!-- top navigation bar -->
     <div class="container-fluid">
         <div class="row">
+
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
+
                     <!-- navbar header -->
                     <div class="navbar-header">
                         <h2 class="navbar-headliner">Data Science</h2>
                     </div>
                 </div>
-            </nav>
+            </nav> <!-- navbar-default -->
+
         </div>
     </div>
 
     <!-- search bar and buttons container -->
-    <div class="container-fluid" id="search-container">
+    <div class="container-fluid  searchbar-container">
+
         <div class="col-xs-10 col-sm-10 col-lg-10">
-            <input type="text" class="form-control" id="search-input" />
+            <input type="text" class="form-control  searchbar" />
         </div>
+
         <div class="col-xs-2 col-sm-2 col-lg-2">
+
             <button class="btn" type="button" onclick="search.drawChart()">Search</button>
+
             <div class="btn-group">
                 <button class="btn" type="button" onclick="toggleAdditional()">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-value="right" id="options"></span>
                 </button>
             </div>
+
         </div>
+
     </div>
 
     <!-- Additional options container -->
-    <div class="form-horizontal" style="display:none;" id="additional-options">
+    <div class="form-horizontal  additional-options" style="display:none;">
+
         <div class="form-group" id="keyword-options">
             <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Search keywords:</label>
             <div class="col-xs-6 col-sm-7 col-lg-8">
                 <input type="text" class="form-control" placeholder="names of keywords" />
             </div>
         </div>
+
         <div class="form-group" id="author-options">
             <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Search authors:</label>
             <div class="col-xs-6 col-sm-7 col-lg-8">
                 <input type="text" class="form-control" placeholder="names of the authors" />
             </div>
         </div>
+
         <div class="form-group" id="time-options">
             <div class="form-inline">
                 <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Time interval:</label>
@@ -69,33 +83,34 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- Chart type container -->
-    <div class="container-fluid text-center" id="dropdown-container">
+    <div class="container-fluid  dropdown-container  text-center">
+
         Types of graphs:
-        <div class="btn-group" id="dropdown-selector">
+        <div class="btn-group dropdown-selector">
             <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span id="graph-type">Timestream chart</span>
                 &nbsp;
                 <span class="caret"></span>
             </button>
+
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-menu">
                 <li><a tabindex="-1" href="#">Timestream chart</a></li>
                 <li><a tabindex="-1" href="#">Topic landscape (TODO)</a></li>
             </ul>
+
         </div>
     </div>
 
     <!-- Wait container -->
-    <div class="wait-container" style="display:none;">
-        <div class="wait-content center-block">
-        </div>
+    <div class="wait-content center-block" style="display:none;">
     </div>
 
     <!-- graph container -->
-    <div class="container-fluid" id="graph-container">
-
+    <div class="container-fluid  graph-content">
         <div class="graph-tooltip notvisible"></div>
     </div>
 

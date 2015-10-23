@@ -1,0 +1,63 @@
+﻿/*---------------------*\
+      Page style
+\*---------------------*/
+
+body {
+    height: 100%;
+    width: 100%;
+    background-color: #e6e6e6;
+}
+
+
+/* top navigation bar */
+.navbar-headliner {
+    color: #ffffff;
+}
+
+.navbar {
+    min-height: 40px;
+    margin-bottom: 0px;
+    border-radius: 0px;
+}
+
+.navbar-brand {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+}
+
+.navbar-header .navbar-brand {
+    color: white;
+}
+
+.navbar-default {
+    background-color: #23241f;
+    border-color: transparent;
+}
+
+
+/* search bar */
+.searchbar-container {
+    padding: 20px 10px 20px 10px;
+    background-color: #DDD;
+}
+
+.searchbar {
+    border-color: #6375fc;
+    border-width: 2px;
+}
+
+
+/* buttons */
+.btn, .btn:focus, .btn:hover {
+    background-color: #6375fc;
+    color: #ffffff;
+    font-weight: 400;
+}
+
+    .btn:active, .btn.active {
+        color: #FFF;
+    }
+
+    .btn:hover {
+        background-color: #808ffe;
+    }

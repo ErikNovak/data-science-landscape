@@ -178,7 +178,6 @@ function streamGraph(_options) {
      * 
      */
     this.displayStreamGraph = function () {
-        console.log(streamData);
         // the width and height of the container and the chartBody
         var totalWidth = $(options.containerNm).width(),
             totalHeight = $(options.containerNm).height(),
