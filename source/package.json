@@ -1,0 +1,17 @@
+{
+  "name": "visualization",
+  "version": "0.0.0",
+  "description": "The visualization of the Data Science database.",
+  "main": "app.js",
+  "author": {
+    "name": "Erik",
+    "email": "erik.novak@ijs.si"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "fs": "0.0.2",
+    "path": "^0.12.7",
+    "qminer": "^3.0.0"
+  }
+}
