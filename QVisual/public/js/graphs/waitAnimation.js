@@ -10,6 +10,9 @@ function waitAnimation(_options) {
         color: { background: "#ddd", foreground: "#6375fc" }        // the background and foreground color of the wait icon
     }, _options);
     
+    /**
+     * Displays the animation of the waiting object. 
+     */
     this.displayAnimation = function () {
         // set the location of the icon
         var totalWidth = $(options.containerName).width(),
@@ -70,7 +73,10 @@ function waitAnimation(_options) {
             .call(arcTween, startAngleSecond, endAngleSecond);
         }, 1);
         
-        // helper function for the transition of the arc
+        /**
+         * The helper function, which creates the transition of the 
+         * wait animation.  
+         */
         function arcTween(transition, startAngle, endAngle) {
             transition.attrTween("d", function (d) {
                 var interpolateStart = d3.interpolate(d.startAngle, startAngle);

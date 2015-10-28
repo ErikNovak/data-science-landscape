@@ -60,26 +60,26 @@
     <!-- Additional options container -->
     <div class="form-horizontal  additional-options" style="display:none;">
 
-        <div class="form-group" id="keyword-options">
+        <div class="form-group">
             <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Search keywords:</label>
             <div class="col-xs-6 col-sm-7 col-lg-8">
-                <input type="text" class="form-control" placeholder="names of keywords" />
+                <input type="text" class="form-control" id="options_keywords"  placeholder="names of keywords" />
             </div>
         </div>
-
-        <div class="form-group" id="author-options">
+        <!-- Author optional data
+        <div class="form-group">
             <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Search authors:</label>
             <div class="col-xs-6 col-sm-7 col-lg-8">
-                <input type="text" class="form-control" placeholder="names of the authors" />
+                <input type="text" class="form-control" id="options_authors" placeholder="names of the authors" />
             </div>
         </div>
-
-        <div class="form-group" id="time-options">
+            -->
+        <div class="form-group">
             <div class="form-inline">
                 <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Time interval:</label>
                 <div class="col-xs-6 col-sm-7 col-lg-8">
-                    <input type="text" class="form-control" placeholder="start year" />
-                    <input type="text" class="form-control" placeholder="end year" />
+                    <input type="text" class="form-control" id="options_start_year" placeholder="start year" />
+                    <input type="text" class="form-control" id="options_end_year" placeholder="end year" />
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
 
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-menu">
                 <li><a tabindex="-1" href="#">Timestream chart</a></li>
-                <li><a tabindex="-1" href="#">Topic landscape (TODO)</a></li>
+                <li><a tabindex="-1" href="#">Topic landscape</a></li>
             </ul>
 
         </div>
@@ -124,6 +124,7 @@
 
     <!-- Graph visualizations -->
     <script type="text/javascript" src="./js/graphs/streamGraph.js"></script>
+    <script type="text/javascript" src="./js/graphs/landscapeGraph.js"></script>
     <script type="text/javascript" src="./js/graphs/waitAnimation.js"></script>
 
     <!-- Additional functions on the page -->

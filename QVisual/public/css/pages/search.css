@@ -1,5 +1,5 @@
 ﻿
-.tokenfield {
+.searchbar-container .tokenfield {
     border-color: #6375fc;
     border-width: 2px;
 }
@@ -12,7 +12,9 @@
 }
 
 .tokenfield .token .token-label {
-    vertical-align:middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    vertical-align: middle;
 }
 
     .tokenfield .token .close {
@@ -75,8 +77,8 @@
     text-align: center;
     margin-top:    40px;
     margin-bottom: 40px;
-    height: 200px;
     width:  100%;
+    height: 70%;
 }
 
 
@@ -86,8 +88,7 @@
     display: none;
     position: relative;
     width:        80%;
-    height:       540px;
-    max-height:   540px;
+    height:       70%;
     border-radius: 5px;
     margin-top:    50px;
     margin-bottom: 30px;

@@ -27,14 +27,20 @@ app.listen('3000', function () {
  * 
  */
 
-var qm = require('qminer');
+var qm = require('../../qminer');
 var dataformat = require('./dataformat/dataformat.js');
+var landscape = require('./dataformat/landscape.js');
 
 var basePath = './database/'
 var base = new qm.Base({
     mode: 'openReadOnly',
-    dbPath: basePath + "QMinerAcademicsScience/"
+    dbPath: basePath + /*"test_database/db/"*/ "QMinerAcademicsScience/"
 });
+
+//var ftr = new qm.FeatureSpace(base, 
+//    { type: "text", source: "Test", field: "article", weight: "tfidf", normalize: true, tokenizer: { type: "simple", stopwords: "en" }
+//});
+
 
 // query the data from the database
 var dataQuery = function (data) {
@@ -51,17 +57,29 @@ var dataQuery = function (data) {
         result.push({ value: data[DataN].label, type: data[DataN].type, subset: res });
     }
     return result;
+    //ftr.clear();
+    //var sample = base.store("Test").newRecordSet(qm.la.rangeVec(0, 99));
+    //ftr.updateRecords(sample);
+    //var fout = new qm.fs.openWrite("./matrix.bin");
+    //ftr.extractSparseMatrix(base.store("Test").newRecordSet(qm.la.rangeVec(0, 99))).save(fout).close();
+    return sample;
+
 }
 
 // query the data for autocomplete
 var autoQuery = function (data) {
     
     var result = [];
-    var stores = [
-        { store: "FieldsOfStudy", type: "keyword" },
-        { store: "Authors", type: "author" },
-        { store: "Journals", type: "journal" }
-    ];
+    var stores;
+    if (data.autotype == "keywords") {
+        stores = [{ store: "FieldsOfStudy", type: "keyword" }];
+    } else {
+        stores = [
+            { store: "FieldsOfStudy", type: "keyword" },
+            { store: "Authors", type: "author" },
+            { store: "Journals", type: "journal" }
+        ];
+    }
     for (var StoreN = 0; StoreN < stores.length; StoreN++) {
         var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
         var res = base.search(query);
@@ -91,7 +109,7 @@ app.post('/', function (request, response) {
         var search = dataQuery(req.data);
         // given options
         var options = {
-            containerNm: ".graph-content",
+            containerName: ".graph-content",
             margin: {
                 top: 40, 
                 left: 30, 
@@ -99,8 +117,17 @@ app.post('/', function (request, response) {
                 right: 30
             }
         };
+        
+        var values;
+        if (req.graph_type == "Timestream chart") {
+            values = dataformat.jsonify(search, req.addOptions);
+            
+        } else if (req.graph_type == "Topic landscape") {
+            //values = landscape.jsonify(ftr.extractSparseMatrix(search));
+        }
+
         var data = {
-            values: dataformat.jsonify(search),
+            values: values,
             options: options
         };
         response.send(data);

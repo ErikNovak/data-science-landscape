@@ -25,8 +25,8 @@ function streamGraph(_options) {
     var chartBody = undefined;
     
     /**
-     * The streamData is a JSON object containing the data of the search 
-     * data. It is in a form:
+     * The streamData is a JSON object containing the data of the search.
+     * It is in a form:
      * {
      *      "Keyword": {
      *          type: "keyword",
@@ -97,7 +97,7 @@ function streamGraph(_options) {
         if (json.type == "keyword") {
             var time = Object.keys(json.data);
             return { min: Math.min.apply(null, time), max: Math.max.apply(null, time) };
-        } else if (json.type == "author") {
+        } else if (json.type == "author" || json.type == "journal") {
             var keywords = Object.keys(json.data);
             for (var KeyN = 0; KeyN < keywords.length; KeyN++) {
                 var time = Object.keys(json.data[keywords[KeyN]].data);
@@ -134,6 +134,7 @@ function streamGraph(_options) {
      * @returns {Array.<object>} The array of coordinates created for the key variable out of data.
      */
     var createLayers = function () {
+        var centerData = 0.5;
         var arr = [];
         var xminmax = xMinMax();
         var topics = Object.keys(streamData);
@@ -145,25 +146,24 @@ function streamGraph(_options) {
                 var topicArr = [];
                 // if the topic is a keyword
                 var time = Object.keys(json.data);
-                for (var xIdx = xminmax.minimum; xIdx <= xminmax.maximum; xIdx++) {
+                for (var xIdx = xminmax.minimum - 1; xIdx <= xminmax.maximum + 1; xIdx++) {
                     if (time.indexOf(xIdx.toString()) != -1) {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: json.data[xIdx.toString()] });
+                        topicArr.push({ type: "keyword", name: topic, x: xIdx + centerData, y: json.data[xIdx.toString()] });
                     } else {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: 0 });
+                        topicArr.push({ type: "keyword", name: topic, x: xIdx + centerData, y: 0 });
                     }
                 }
                 arr.push(topicArr);
-            } else if (json.type == "author") {
-                
+            } else if (json.type == "author" || json.type == "journal") {
                 var keywords = Object.keys(json.data);
                 for (var KeywordsN = 0; KeywordsN < keywords.length; KeywordsN++) {
                     var topicArr = [];
                     var time = Object.keys(json.data[keywords[KeywordsN]].data);
-                    for (var xIdx = xminmax.minimum; xIdx <= xminmax.maximum; xIdx++) {
+                    for (var xIdx = xminmax.minimum - 1; xIdx <= xminmax.maximum + 1; xIdx++) {
                         if (time.indexOf(xIdx.toString()) != -1) {
-                            topicArr.push({ type: "author", name: topic, subname: keywords[KeywordsN], x: xIdx, y: json.data[keywords[KeywordsN]].data[xIdx.toString()] });
+                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx + centerData, y: json.data[keywords[KeywordsN]].data[xIdx.toString()] });
                         } else {
-                            topicArr.push({ type: "author", name: topic, subname: keywords[KeywordsN], x: xIdx, y: 0 });
+                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx + centerData, y: 0 });
                         }
                     }
                     arr.push(topicArr);
@@ -179,18 +179,18 @@ function streamGraph(_options) {
      */
     this.displayStreamGraph = function () {
         // the width and height of the container and the chartBody
-        var totalWidth = $(options.containerNm).width(),
-            totalHeight = $(options.containerNm).height(),
+        var totalWidth = $(options.containerName).width(),
+            totalHeight = $(options.containerName).height(),
             width = totalWidth - options.margin.left - options.margin.right,
             height = totalHeight - options.margin.top - options.margin.bottom;
         
-        d3.select(options.containerNm + " svg").remove();
+        d3.select(options.containerName + " svg").remove();
         
         if (streamData == undefined) {
-            $(options.containerNm).hide();
+            $(options.containerName).hide();
             return;
         }
-        $(options.containerNm).show();
+        $(options.containerName).show();
         
         // construct the zoom object
         zoom = d3.behavior.zoom();
@@ -208,6 +208,9 @@ function streamGraph(_options) {
             } else {
                 xStart = xminmax.minimum;
             }
+            if (xStart == xEnd) {
+                xStart -= 1; xEnd += 1;
+            }
             // scale for the x axis
             xScale = options.scaleType;
             xScale.domain([xStart, xEnd + 1])
@@ -220,9 +223,9 @@ function streamGraph(_options) {
             xAxis = d3.svg.axis()
                 .scale(xScale)
                 .tickFormat(axisFormat)
-                .ticks(10)
+                .ticks(8)
                 .tickSize(5)
-                .tickPadding(6)
+                .tickPadding(4)
                 .orient("bottom");
         } else if (options.xCoordinateType == "time") {
             // if the x coordinate type is timestamp
@@ -230,7 +233,7 @@ function streamGraph(_options) {
         }
         
         // setting the svg element (container for the visualization)
-        var svg = d3.select(options.containerNm)
+        var svg = d3.select(options.containerName)
             .append("svg")
             .attr("id", "svg-canvas")
             .attr("width", totalWidth)
@@ -262,7 +265,7 @@ function streamGraph(_options) {
             var topics = Object.keys(streamData);
             for (var id in topics) {
                 if (streamData[topics[id]].type == "keyword") { arr.push({}); }
-                else if (streamData[topics[id]].type == "author") {
+                else if (streamData[topics[id]].type == "author" || streamData[topics[id]].type == "journal") {
                     for (var key in Object.keys(streamData[topics[id]].data)) {
                         arr.push({});
                     }
@@ -275,7 +278,7 @@ function streamGraph(_options) {
             .attr("class", "area");
         
         zoom.x(xScale)
-            .scaleExtent([0, 5]);
+            .scaleExtent([0, 4]);
         
         // append the x axis to the svg
         svg.append("g")
@@ -287,6 +290,9 @@ function streamGraph(_options) {
         this.redraw();
     }
     
+    /**
+     * Draws the graph with all the functions. 
+     */
     this.redraw = function () {
         
         // what to do when zoomed
@@ -298,8 +304,7 @@ function streamGraph(_options) {
         }
         zoom.on("zoom", onZoom);
         
-        var self = this,
-            totalHeight = $(options.containerNm).height(),
+        var totalHeight = $(options.containerName).height(),
             height = totalHeight - options.margin.top - options.margin.bottom;
         
         // stack the layers
@@ -318,7 +323,7 @@ function streamGraph(_options) {
             .y1(function (d) { return yScale(d.y0 + d.y); });
         
         // get the svg element
-        var svg = d3.select(options.containerNm + " svg");
+        var svg = d3.select("#svg-canvas");
         
         // draw the stream graph areas
         chartBody.selectAll(".area")
@@ -331,7 +336,7 @@ function streamGraph(_options) {
             .on("mousemove", function (d, idx) {
             
             // remove the highlight rect
-            $(options.containerNm + " .time-rect").remove();
+            $(options.containerName + " .time-rect").remove();
             var coords = d3.mouse(this);
             
             var time;
@@ -345,8 +350,12 @@ function streamGraph(_options) {
                 return;
             }
             
+            
             // find the data for the selected year
-            matchingValue = $.grep(d, function (data) { return data.x == time; });
+            matchingValue = $.grep(d, function (data) {
+                var centerData = 0.5;
+                return data.x == time + centerData;
+            });
             if (matchingValue.length == 0) {
                 return;
             }
@@ -358,12 +367,12 @@ function streamGraph(_options) {
             
             // create the tooltip with the related information
             if (options.tooltipTextCallback) {
-                var tooltipDiv = $(options.containerNm + " .graph-tooltip");
+                var tooltipDiv = $(options.containerName + " .graph-tooltip");
                 tooltipDiv.html(options.tooltipTextCallback(matchingValue));
                 var x = coords[0] + options.margin.left;
                 var y = coords[1] + options.margin.top;
-                var xOffset = (coords[0] > ($(options.containerNm).width() / 2)) ? (-tooltipDiv.outerWidth() - 5) : 5;
-                var yOffset = (coords[1] > ($(options.containerNm).height() / 2)) ? (-tooltipDiv.outerHeight() - 5) : 5;
+                var xOffset = (coords[0] > ($(options.containerName).width() / 2)) ? (-tooltipDiv.outerWidth() - 5) : 5;
+                var yOffset = (coords[1] > ($(options.containerName).height() / 2)) ? (-tooltipDiv.outerHeight() - 5) : 5;
                 var xAdditionalOffset = 10; // additional x offset
                 var yAdditionalOffset = 0;  // additional y offset
                 tooltipDiv.css({ left: (x + xOffset + xAdditionalOffset) + "px", top: (y + yOffset + yAdditionalOffset) + "px" })
@@ -382,9 +391,9 @@ function streamGraph(_options) {
         })
             .on("mouseout", function (d, idx) {
             // hide the rectangle
-            $(options.containerNm + " .time-rect").remove();
+            $(options.containerName + " .time-rect").remove();
             //Hide the tooltip
-            $(options.containerNm + " .graph-tooltip").addClass("notvisible");
+            $(options.containerName + " .graph-tooltip").addClass("notvisible");
             var originalFill = $(this).attr("original-fill");
             if (originalFill)
                 $(this).css("fill", originalFill);
@@ -421,7 +430,7 @@ function streamGraph(_options) {
                 var json = streamData[topics[topic]];
                 if (json.type == "keyword") {
                     legendLabel.push(topics[topic]);
-                } else if (json.type == "author") {
+                } else if (json.type == "author" || json.type == "journal") {
                     var keywords = Object.keys(json.data);
                     for (var key in keywords) {
                         legendLabel.push(topics[topic] + ", " + keywords[key]);
@@ -440,22 +449,36 @@ function streamGraph(_options) {
 }
 
 /**
- * Additional functions and callbacks
+ * Helper functions.
+ * 
  */
 
+/**
+ * Creates the tooltip text for the Microsoft Academics data. 
+ * @param {object} data - The json object containing the data of the keyword/author/journal.
+ * @returns {string} The string for the appropriate data.
+ */
 var tooltipTextCallback = function (data) {
-    var text = null;
+    var text;
+    var decenterData = 0.5;
     if (data[0].type == "keyword") {
-        text = "<p>In the year <b>" + data[0].x + "</b>" +
+        // tooltip text for the keyword
+        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
            "<br>there were <b>" + data[0].y + "</b> papers" +
            "<br>containing the" +
            "<br>" + data[0].type + " <b>" + data[0].name + "</b></p>";
-        return text;
     } else if (data[0].type == "author") {
-        text = "<p>In the year <b>" + data[0].x + "</b>" +
+        // tooltip text for the author
+        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
            "<br>there were <b>" + data[0].y + "</b> papers" +
            "<br>written by " + "<b>" + data[0].name + "</b>" +
-           "<br>" + " on the topic of <b>" + data[0].subname + "</b></p>";
+           "<br>containing the keyword <b>" + data[0].subname + "</b></p>";
+    } else if (data[0].type == "journal") {
+        // tooltip text for the journal
+        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
+           "<br>there were <b>" + data[0].y + "</b> papers" +
+           "<br>published in the journal " + "<b>" + data[0].name + "</b>" +
+           "<br>containing the keyword <b>" + data[0].subname + "</b></p>";
     }
     return text;
 }
