@@ -1,2 +1,2 @@
-# QVisual
-Visualization of QMiner data.
+# Data visualization
+Visualization of the Data Science database.
