@@ -36,10 +36,11 @@ $(function () {
                 data: { type: "autocomplete", value: topic },
                 success: function (data) {
                     autocompleteTopics = data.slice(0, 15);
-                    $(".searchbar").data('bs.tokenfield').$input.autocomplete({
+                    var autocomplete = $(".searchbar").data('bs.tokenfield').$input.autocomplete({
                         source: autocompleteTopics,
                         delay: 0
-                    }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                    });
+                    autocomplete.data("ui-autocomplete")._renderItem = function (ul, item) {
                         var icon;
                         // get the correct type icon
                         if (item.type == "keyword") {
