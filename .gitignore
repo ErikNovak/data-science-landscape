@@ -1,2 +1,4 @@
+*.suo
+
 source/node_modules/
 source/database/
