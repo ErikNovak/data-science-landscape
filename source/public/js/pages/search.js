@@ -5,7 +5,7 @@ var search = {
         
         //get the search input
         var search_values = $(".searchbar").tokenfield("getTokens");
-        if (search_values.length == 0) { return; }
+        //if (search_values.length == 0) { return; }
 
         // get the additional options 
         var addOptions = { keywords: [], authors: [], year: { start: 1975, end: 2015 } };

@@ -11,7 +11,7 @@
 * included in the subset at the moment.
 */
 
-var qm = require('../../qminer');
+var qm = require('qminer');
 var ht = qm.ht;
 var fs = qm.fs;
 

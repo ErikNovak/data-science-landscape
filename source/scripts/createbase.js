@@ -2,7 +2,7 @@
 * Creates the QMiner base containing MicrosoftAcademics data.
 */
 
-var qm = require('../../../qminer');
+var qm = require('qminer');
 var fs = qm.fs;
 
 var basePath = '../database/';

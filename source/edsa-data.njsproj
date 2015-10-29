@@ -3,7 +3,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>esda-data</Name>
+    <Name>edsa-data</Name>
     <RootNamespace>QVisual</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="database\YahooFinanceTest\createYahooBase.js" />
     <Compile Include="dataformat\dataformat.js" />
     <Compile Include="dataformat\landscape.js" />
     <Compile Include="public\css\jquery\external\jquery\jquery.js" />
@@ -53,6 +54,8 @@
     <Compile Include="scripts\createsubset.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="database\" />
+    <Folder Include="database\YahooFinanceTest\" />
     <Folder Include="dataformat\" />
     <Folder Include="public\" />
     <Folder Include="public\css\" />
@@ -75,6 +78,9 @@
     <Folder Include="scripts\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="database\YahooFinanceTest\yahoo.json" />
+    <Content Include="database\YahooFinanceTest\YahooFinance.include.txt" />
+    <Content Include="database\YahooFinanceTest\YahooFinance.load.txt" />
     <Content Include="package.json" />
     <Content Include="public\css\bootstrap\bootstrap-tokenfield.css" />
     <Content Include="public\css\bootstrap\bootstrap.css" />

@@ -6,7 +6,7 @@
  * the data for the timestream graph.
  * 
  */
-var qm = require('../../../qminer');
+var qm = require('qminer');
 
 module.exports = exports = {
     

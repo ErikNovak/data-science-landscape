@@ -184,9 +184,23 @@ $(function () {
                 $(this).find("a").hide(200);
             }
         );
+
+        if ($(this).val() != "" || $(this).tokenfield("getTokens").length != 0) {
+            $(".additional-options .token-input").attr("placeholder", "");
+        }
         // on click the DOM is removed
         $(event.relatedTarget).click(function () {
             $(this).remove();
+            $("#options_keywords").trigger('tokenfield:removedtoken');
         })
     });
+
+    // if the tag is clicked, remove it
+    $("#options_keywords").on('tokenfield:removedtoken', function (event) {
+        
+        if ($(this).tokenfield("getTokens").length == 0) {
+            $("#options_keywords-tokenfield").attr("placeholder", "names of keywords");
+        }
+    });
+
 });

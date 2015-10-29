@@ -450,7 +450,7 @@ function streamGraph(_options) {
 
 /**
  * Helper functions.
- * 
+ * The tooltip text creater.
  */
 
 /**
