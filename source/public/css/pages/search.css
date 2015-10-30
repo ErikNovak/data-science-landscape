@@ -87,10 +87,10 @@
 .graph-content {
     display: none;
     position: relative;
-    width:        80%;
-    height:       70%;
+    width:        90%;
+    height:       90%;
     border-radius: 5px;
     margin-top:    50px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     
 }

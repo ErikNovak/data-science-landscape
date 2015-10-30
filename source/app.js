@@ -34,65 +34,53 @@ var landscape = require('./dataformat/landscape.js');
 var basePath = './database/'
 var base = new qm.Base({
     mode: 'openReadOnly',
-    dbPath: basePath + "YahooFinanceTest/db/" //"QMinerAcademicsScience/"
+    dbPath: basePath + "QMinerAcademicsScience/"
 });
-
-var ftr = new qm.FeatureSpace(base, 
-    { type: "text", source: "Yahoo", field: "article", weight: "tfidf", normalize: true, tokenizer: { type: "simple", stopwords: "en" }
-});
-
 
 // query the data from the database
 var dataQuery = function (data) {
-    //var result = [];
-    //var store;
-    //for (var DataN = 0; DataN < data.length; DataN++) {
-    //    // get the correct store name
-    //    if (data[DataN].type == "keyword") { store = "FieldsOfStudy" }
-    //    else if (data[DataN].type == "author") { store = "Authors" }
-    //    else if (data[DataN].type == "journal") { store = "Journals" }
-    //    // query the data
-    //    var query = { $from: store, normalizedName: data[DataN].value };
-    //    var res = base.search(query);
-    //    result.push({ value: data[DataN].label, type: data[DataN].type, subset: res });
-    //}
-    //return result;
-    //ftr.clear();
-    var sample = base.store("Yahoo").newRecordSet(qm.la.rangeVec(0, 99));
-    ftr.updateRecords(sample);
-    //var fout = new qm.fs.openWrite("./matrix.bin");
-    //ftr.extractSparseMatrix(base.store("Test").newRecordSet(qm.la.rangeVec(0, 99))).save(fout).close();
-    return sample;
-
+    var result = [];
+    var store;
+    for (var DataN = 0; DataN < data.length; DataN++) {
+        // get the correct store name
+        if (data[DataN].type == "keyword") { store = "FieldsOfStudy" }
+        else if (data[DataN].type == "author") { store = "Authors" }
+        else if (data[DataN].type == "journal") { store = "Journals" }
+        // query the data
+        var query = { $from: store, normalizedName: data[DataN].value };
+        var res = base.search(query);
+        result.push({ value: data[DataN].label, type: data[DataN].type, subset: res });
+    }
+    return result;
 }
 
 // query the data for autocomplete
 var autoQuery = function (data) {
     
-    //var result = [];
-    //var stores;
-    //if (data.autotype == "keywords") {
-    //    stores = [{ store: "FieldsOfStudy", type: "keyword" }];
-    //} else {
-    //    stores = [
-    //        { store: "FieldsOfStudy", type: "keyword" },
-    //        { store: "Authors", type: "author" },
-    //        { store: "Journals", type: "journal" }
-    //    ];
-    //}
-    //for (var StoreN = 0; StoreN < stores.length; StoreN++) {
-    //    var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
-    //    var res = base.search(query);
+    var result = [];
+    var stores;
+    if (data.autotype == "keywords") {
+        stores = [{ store: "FieldsOfStudy", type: "keyword" }];
+    } else {
+        stores = [
+            { store: "FieldsOfStudy", type: "keyword" },
+            { store: "Authors", type: "author" },
+            { store: "Journals", type: "journal" }
+        ];
+    }
+    for (var StoreN = 0; StoreN < stores.length; StoreN++) {
+        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
+        var res = base.search(query);
         
-    //    var arr = res.map(function (record) {
-    //        var type = stores[StoreN].type;
-    //        var value = record.normalizedName;
-    //        var label = record.name;
-    //        return { type: type, value: value, label: label };
-    //    });
-    //    result = result.concat(arr.slice(0, 5));
-    //}
-    //return result;
+        var arr = res.map(function (record) {
+            var type = stores[StoreN].type;
+            var value = record.normalizedName;
+            var label = record.name;
+            return { type: type, value: value, label: label };
+        });
+        result = result.concat(arr.slice(0, 5));
+    }
+    return result;
 }
 
 
@@ -123,7 +111,6 @@ app.post('/', function (request, response) {
             values = dataformat.jsonify(search, req.addOptions);
             
         } else if (req.graph_type == "Topic landscape") {
-            values = landscape.jsonify(ftr.extractSparseMatrix(search));
         }
 
         var data = {

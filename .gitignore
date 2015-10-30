@@ -1,4 +1,4 @@
 *.suo
-
+source/.ntvs_analysis.dat
 source/node_modules/
 source/database/

@@ -134,9 +134,11 @@ function streamGraph(_options) {
      * @returns {Array.<object>} The array of coordinates created for the key variable out of data.
      */
     var createLayers = function () {
-        var centerData = 0.5;
         var arr = [];
         var xminmax = xMinMax();
+        var xmin = xminmax.minimum;
+        var xmax = xminmax.maximum;
+        if (xmin == xmax) { xmin -= 1; xmax += 1; }
         var topics = Object.keys(streamData);
         for (var idx in topics) {
             var topic = topics[idx];
@@ -146,11 +148,11 @@ function streamGraph(_options) {
                 var topicArr = [];
                 // if the topic is a keyword
                 var time = Object.keys(json.data);
-                for (var xIdx = xminmax.minimum - 1; xIdx <= xminmax.maximum + 1; xIdx++) {
+                for (var xIdx = xmin; xIdx <= xmax; xIdx++) {
                     if (time.indexOf(xIdx.toString()) != -1) {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx + centerData, y: json.data[xIdx.toString()] });
+                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: json.data[xIdx.toString()] });
                     } else {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx + centerData, y: 0 });
+                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: 0 });
                     }
                 }
                 arr.push(topicArr);
@@ -159,11 +161,11 @@ function streamGraph(_options) {
                 for (var KeywordsN = 0; KeywordsN < keywords.length; KeywordsN++) {
                     var topicArr = [];
                     var time = Object.keys(json.data[keywords[KeywordsN]].data);
-                    for (var xIdx = xminmax.minimum - 1; xIdx <= xminmax.maximum + 1; xIdx++) {
+                    for (var xIdx = xmin; xIdx <= xmax; xIdx++)  {
                         if (time.indexOf(xIdx.toString()) != -1) {
-                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx + centerData, y: json.data[keywords[KeywordsN]].data[xIdx.toString()] });
+                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx, y: json.data[keywords[KeywordsN]].data[xIdx.toString()] });
                         } else {
-                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx + centerData, y: 0 });
+                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx, y: 0 });
                         }
                     }
                     arr.push(topicArr);
@@ -353,8 +355,7 @@ function streamGraph(_options) {
             
             // find the data for the selected year
             matchingValue = $.grep(d, function (data) {
-                var centerData = 0.5;
-                return data.x == time + centerData;
+                return data.x == time;
             });
             if (matchingValue.length == 0) {
                 return;
@@ -460,22 +461,21 @@ function streamGraph(_options) {
  */
 var tooltipTextCallback = function (data) {
     var text;
-    var decenterData = 0.5;
     if (data[0].type == "keyword") {
         // tooltip text for the keyword
-        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
+        text = "<p>In the year <b>" + data[0].x + "</b>" +
            "<br>there were <b>" + data[0].y + "</b> papers" +
            "<br>containing the" +
            "<br>" + data[0].type + " <b>" + data[0].name + "</b></p>";
     } else if (data[0].type == "author") {
         // tooltip text for the author
-        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
+        text = "<p>In the year <b>" + data[0].x + "</b>" +
            "<br>there were <b>" + data[0].y + "</b> papers" +
            "<br>written by " + "<b>" + data[0].name + "</b>" +
            "<br>containing the keyword <b>" + data[0].subname + "</b></p>";
     } else if (data[0].type == "journal") {
         // tooltip text for the journal
-        text = "<p>In the year <b>" + (data[0].x - decenterData) + "</b>" +
+        text = "<p>In the year <b>" + data[0].x + "</b>" +
            "<br>there were <b>" + data[0].y + "</b> papers" +
            "<br>published in the journal " + "<b>" + data[0].name + "</b>" +
            "<br>containing the keyword <b>" + data[0].subname + "</b></p>";

@@ -22,9 +22,9 @@ module.exports = exports = {
      */
     LSI: function (A) {
         console.log("LSI");
-        var k = 37;
+        var k = 137;
         var svd = qm.la.svd(A, k, { iter: 10 });
-        var U = svd.U.getColSubmatrix(qm.la.rangeVec(1, 36));
+        var U = svd.U.getColSubmatrix(qm.la.rangeVec(1, 136));
         var lsi = U.multiplyT(A);
         return lsi;
     },
@@ -61,15 +61,15 @@ module.exports = exports = {
      * @returns {Array.<object>} The array containing the json object, where Array[i].x
      *  and Array[i].y are the coordinates of the mapped i-th document.
      */
-    jsonify: function (A) {
-        var landscape = exports.Landscape(A);
+    jsonify: function (json) {
+        var landscape = exports.Landscape(json.matrix);
         console.log("JSON");
         var xSquare = linear(landscape.getCol(0));
         var ySquare = linear(landscape.getCol(1));
         var documentXY = [];
         for (var RowN = 0; RowN < landscape.rows; RowN++) {
             var docRow = landscape.getRow(RowN);
-            documentXY.push({ x: xSquare(docRow.at(0)), y: ySquare(docRow.at(1)) });
+            documentXY.push({ label: json.articles.at(RowN), x: xSquare(docRow.at(0)), y: ySquare(docRow.at(1)) });
         }
         return documentXY;
     }
