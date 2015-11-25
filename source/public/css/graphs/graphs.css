@@ -1,4 +1,4 @@
-﻿#svg-canvas {
+﻿#svg-container {
     border-radius: 5px;
     background-color: white;
 }
@@ -11,7 +11,8 @@
     width: auto;
     padding: 3px 5px;
     border-radius: 5px;
-    background-color: rgb(105, 105, 105);
+    max-width: 400px;
+    background-color: rgba(40,16,146, 0.8);
 }
 
 .notvisible {
@@ -27,9 +28,29 @@ rect {
     stroke-width: 2;
 }
 
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .axis path,
 .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+}
+.domain {
+    fill:   none !important;
+    stroke: #000 !important;
+}
+.hexagon {
+  fill: none;
+}
+
+.hidden {
+    visibility: hidden;
 }

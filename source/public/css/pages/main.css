@@ -61,3 +61,8 @@ body {
     .btn:hover {
         background-color: #808ffe;
     }
+
+/* hidden */
+.hidden {
+    visibility:hidden;
+}

@@ -7,18 +7,16 @@
 function streamGraph(_options) {
     // settings
     var options = $.extend({
-        containerName: undefined,                                   // the dom that contains the svg element
-        scaleType: d3.scale.linear(),                               // the scale type (d3.scale.linear(), d3.scale.ordinal(), d3.scale.log())
-        offsetType: "silhouette",                                   // the offset type ("zero", "wiggle", "silhouette", "expand")
-        xCoordinateType: "number",                                  // the type of the x coordinate ("number", "time")
-        interpolateType: "basis",                                   // the area interpolation type ("linear", "step", "basis", "cardinal", "monotone")
-        tooltipTextCallback: tooltipTextCallback,                   // the callback that generates the text info on the chart (defined at the end of the file)
+        containerName: undefined,                                       // the dom that contains the svg element
+        scaleType: d3.scale.linear(),                                   // the scale type (d3.scale.linear(), d3.scale.ordinal(), d3.scale.log())
+        offsetType: "silhouette",                                       // the offset type ("zero", "wiggle", "silhouette", "expand")
+        xCoordinateType: "number",                                      // the type of the x coordinate ("number", "time")
+        interpolateType: "basis",                                       // the area interpolation type ("linear", "step", "basis", "cardinal", "monotone")
+        tooltipTextCallback: helperFunctions.tooltipTextCallbackStream, // the callback that generates the text info on the chart (defined at the end of the file)
         margin: { top: 30, left: 30, bottom: 20, right: 30 },
         colors: d3.scale.category20()
     }, _options);
     
-    var format = d3.time.format("%Y-%m-%d");
-    var parse = format.parse;
     var zoom = undefined;
     var xAxis = undefined;
     var xScale = undefined;
@@ -71,8 +69,8 @@ function streamGraph(_options) {
      * @param {object} [_streamData] - The stream data added.
      */
     this.setData = function (_streamData) {
-        if (streamData == _streamData || _streamData == undefined) {
-            this.displayStreamGraph();
+        if (_streamData == undefined) {
+            return;
         } else {
             streamData = _streamData;
             this.displayStreamGraph();
@@ -88,43 +86,13 @@ function streamGraph(_options) {
     }
     
     /**
-     * Gets the minimum and maximum value of x variable of the key. 
-     * @param {object} json - The json containing the data and type of the key.
-     */
-    var keyXMinMax = function (json) {
-        var minimum = [];
-        var maximum = [];
-        if (json.type == "keyword") {
-            var time = Object.keys(json.data);
-            return { min: Math.min.apply(null, time), max: Math.max.apply(null, time) };
-        } else if (json.type == "author" || json.type == "journal") {
-            var keywords = Object.keys(json.data);
-            for (var KeyN = 0; KeyN < keywords.length; KeyN++) {
-                var time = Object.keys(json.data[keywords[KeyN]].data);
-                minimum.push(Math.min.apply(null, time));
-                maximum.push(Math.max.apply(null, time));
-            }
-            var min = Math.min.apply(null, minimum);
-            var max = Math.max.apply(null, maximum);
-            return { min: min, max: max };
-        }
-    }
-    
-    /**
      * Gets the minimum and maximum value of x variables in streamData.
      * @returns {object} The JSON object containing the minimum and maxiumum x values of streamData.
      */
     var xMinMax = function () {
-        var minimum = [];
-        var maximum = [];
-        var topics = Object.keys(streamData);
-        for (var xIdx = 0; xIdx < topics.length; xIdx++) {
-            var x = keyXMinMax(streamData[topics[xIdx]]);
-            minimum.push(x.min);
-            maximum.push(x.max);
-        }
-        var min = Math.min.apply(null, minimum);
-        var max = Math.max.apply(null, maximum);
+        var years = Object.keys(streamData.years);
+        var min = Math.min.apply(null, years);
+        var max = Math.max.apply(null, years);
         return { minimum: min, maximum: max };
     }
     
@@ -136,42 +104,41 @@ function streamGraph(_options) {
     var createLayers = function () {
         var arr = [];
         var xminmax = xMinMax();
-        var xmin = xminmax.minimum;
-        var xmax = xminmax.maximum;
-        if (xmin == xmax) { xmin -= 1; xmax += 1; }
-        var topics = Object.keys(streamData);
-        for (var idx in topics) {
-            var topic = topics[idx];
-            var json = streamData[topics[idx]];
-            
-            if (json.type == "keyword") {
-                var topicArr = [];
-                // if the topic is a keyword
-                var time = Object.keys(json.data);
-                for (var xIdx = xmin; xIdx <= xmax; xIdx++) {
-                    if (time.indexOf(xIdx.toString()) != -1) {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: json.data[xIdx.toString()] });
-                    } else {
-                        topicArr.push({ type: "keyword", name: topic, x: xIdx, y: 0 });
-                    }
-                }
-                arr.push(topicArr);
-            } else if (json.type == "author" || json.type == "journal") {
-                var keywords = Object.keys(json.data);
-                for (var KeywordsN = 0; KeywordsN < keywords.length; KeywordsN++) {
-                    var topicArr = [];
-                    var time = Object.keys(json.data[keywords[KeywordsN]].data);
-                    for (var xIdx = xmin; xIdx <= xmax; xIdx++)  {
-                        if (time.indexOf(xIdx.toString()) != -1) {
-                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx, y: json.data[keywords[KeywordsN]].data[xIdx.toString()] });
-                        } else {
-                            topicArr.push({ type: json.type, name: topic, subname: keywords[KeywordsN], x: xIdx, y: 0 });
-                        }
-                    }
-                    arr.push(topicArr);
-                }
+        var minYear = xminmax.minimum;
+        var maxYear = xminmax.maximum;
+        // create the layer
+        var keywords = streamData.searchTags.filter(function (json) { if (json.type == "keyword") { return true; } else { return false; } });
+        var authors = streamData.searchTags.filter(function (json) { if (json.type == "author") { return true; } else { return false; } });
+        var journals = streamData.searchTags.filter(function (json) { if (json.type == "journal") { return true; } else { return false; } });
+        var organizations = streamData.searchTags.filter(function (json) { if (json.type == "organization") { return true; } else { return false; } });
+        var conferences = streamData.searchTags.filter(function (json) { if (json.type == "conferenceSeries") { return true; } else { return false; } });
+        var paperArr = [];
+        var X = Object.keys(streamData.years);
+
+        for (var YearN = minYear; YearN <= maxYear; YearN++) {
+            if (X.indexOf(YearN.toString()) != -1) {
+                paperArr.push({
+                    keywords: keywords, 
+                    authors: authors, 
+                    journals: journals, 
+                    organizations: organizations, 
+                    conferences: conferences,
+                    x: YearN, 
+                    y: streamData.years[YearN.toString()]
+                });
+            } else {
+                paperArr.push({
+                    keywords: keywords, 
+                    authors: authors, 
+                    journals: journals, 
+                    organizations: organizations, 
+                    conferences: conferences,
+                    x: YearN, 
+                    y: 0
+                });
             }
         }
+        arr.push(paperArr);
         return arr;
     }
     
@@ -191,61 +158,57 @@ function streamGraph(_options) {
         if (streamData == undefined) {
             $(options.containerName).hide();
             return;
+        } else {
+            $(options.containerName).show();
         }
-        $(options.containerName).show();
-        
         // construct the zoom object
         zoom = d3.behavior.zoom();
         
-        if (options.xCoordinateType == "number") {
-            // if the x coordinate type is a number
-            
-            // get the maximum and minimum x coordinate value
-            var xminmax = xMinMax();
-            var xStart, 
-                xEnd = xminmax.maximum;
-            if (xminmax.minimum < 1975) {
-                // if the minimum year is less than 1975
-                xStart = 1975;
-            } else {
-                xStart = xminmax.minimum;
-            }
-            if (xStart == xEnd) {
-                xStart -= 1; xEnd += 1;
-            }
-            // scale for the x axis
-            xScale = options.scaleType;
-            xScale.domain([xStart, xEnd + 1])
+        // get the maximum and minimum x coordinate value
+        var xminmax = xMinMax();
+        var xStart, 
+            xEnd = xminmax.maximum;
+        if (xminmax.minimum < 1975) { xStart = 1975; } 
+        else { xStart = xminmax.minimum; }
+        if (xStart == xEnd) { xStart -= 1; xEnd += 1; }
+        
+        // scale for the x axis
+        xScale = options.scaleType;
+        xScale.domain([xStart, xEnd + 1])
                 .range([0, width]);
-            
-            // axis format
-            var axisFormat = d3.format(".0f");
-            
-            // set the x axis
-            xAxis = d3.svg.axis()
+        
+        // axis format
+        var axisFormat = d3.format("0.f");
+        // set the x axis
+        xAxis = d3.svg.axis()
                 .scale(xScale)
-                .tickFormat(axisFormat)
                 .ticks(8)
                 .tickSize(5)
                 .tickPadding(4)
+                .tickFormat(axisFormat)
                 .orient("bottom");
-        } else if (options.xCoordinateType == "time") {
-            // if the x coordinate type is timestamp
-            return;
-        }
         
         // setting the svg element (container for the visualization)
         var svg = d3.select(options.containerName)
             .append("svg")
-            .attr("id", "svg-canvas")
+            .attr("id", "svg-container")
             .attr("width", totalWidth)
-            .attr("height", totalHeight)
-            .append("g")
+            .attr("height", totalHeight);
+        
+        // appending the background color rectangle (for save picture)
+        svg.append("rect")
+            .attr("fill", "#FFFFFF")
+            .attr("width", totalWidth)
+            .attr("height", totalHeight);
+        
+        // appending the sub-container for the SVG elements
+        svg = svg.append("g")
             .attr("transform", "translate(" + options.margin.left + "," + options.margin.top + ")")
             .call(zoom);
         
+        
         svg.append("rect")
-            .attr("fill", "transparent")
+            .attr("fill", "#FFFFFF")
             .attr("width", width)
             .attr("height", height);
         
@@ -262,21 +225,8 @@ function streamGraph(_options) {
             .attr("clip-path", "url(#clip)");
         
         chartBody.selectAll(".area")
-            .data(function () {
-            var arr = [];
-            var topics = Object.keys(streamData);
-            for (var id in topics) {
-                if (streamData[topics[id]].type == "keyword") { arr.push({}); }
-                else if (streamData[topics[id]].type == "author" || streamData[topics[id]].type == "journal") {
-                    for (var key in Object.keys(streamData[topics[id]].data)) {
-                        arr.push({});
-                    }
-                }
-            }
-            return arr;
-        })
-            .enter()
-            .append("path")
+            .data([{}])
+            .enter().append("path")
             .attr("class", "area");
         
         zoom.x(xScale)
@@ -287,6 +237,10 @@ function streamGraph(_options) {
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
             .call(xAxis);
+        
+        svg.select(".x.axis")
+            .selectAll("text")
+            .attr("font-family", "sans-serif");
         
         // draw the charts
         this.redraw();
@@ -308,7 +262,6 @@ function streamGraph(_options) {
         
         var totalHeight = $(options.containerName).height(),
             height = totalHeight - options.margin.top - options.margin.bottom;
-        
         // stack the layers
         var stack = d3.layout.stack().offset(options.offsetType),
             layers = stack(createLayers());
@@ -325,7 +278,7 @@ function streamGraph(_options) {
             .y1(function (d) { return yScale(d.y0 + d.y); });
         
         // get the svg element
-        var svg = d3.select("#svg-canvas");
+        var svg = d3.select("#svg-container");
         
         // draw the stream graph areas
         chartBody.selectAll(".area")
@@ -341,16 +294,11 @@ function streamGraph(_options) {
             $(options.containerName + " .time-rect").remove();
             var coords = d3.mouse(this);
             
-            var time;
-            if (options.xCoordinateType == "number") {
-                time = Math.floor(xScale.invert(coords[0]));
-                // the time grey rectangle
-                var xTimeStart = xScale(time);
-                var xTimeEnd = xScale(time + 1);
-
-            } else if (options.xCoordinateType == "time") {
-                return;
-            }
+            var time = Math.floor(xScale.invert(coords[0]));
+            // the time grey rectangle
+            var xTimeStart = xScale(time);
+            var xTimeEnd = xScale(time + 1);
+            
             
             
             // find the data for the selected year
@@ -399,53 +347,6 @@ function streamGraph(_options) {
             if (originalFill)
                 $(this).css("fill", originalFill);
         });
-        
-        
-        // create the legend
-        var legendRectSize = 16;
-        var legendSpacing = 4;
-        
-        var legend = svg.selectAll('.legend')
-            .data(options.colors.domain())
-            .enter().append("g")
-            .attr("class", "legend")
-            .attr("transform", function (d, i) {
-            var height = legendRectSize + legendSpacing;
-            var offset = height * options.colors.domain().length / 2;
-            var horz = 1 * legendRectSize;
-            var vert = i * (legendRectSize + legendSpacing) + 10;
-            return "translate(" + horz + "," + vert + ")";
-        });
-        
-        legend.append("rect")
-            .attr("width", legendRectSize)
-            .attr("height", legendRectSize)
-            .style("fill", options.colors)
-            .style("stroke", options.colors);
-        
-        // get the labels
-        var legendLabel = [];
-        {
-            var topics = Object.keys(streamData);
-            for (var topic in topics) {
-                var json = streamData[topics[topic]];
-                if (json.type == "keyword") {
-                    legendLabel.push(topics[topic]);
-                } else if (json.type == "author" || json.type == "journal") {
-                    var keywords = Object.keys(json.data);
-                    for (var key in keywords) {
-                        legendLabel.push(topics[topic] + ", " + keywords[key]);
-                    }
-                }
-            }
-        }
-        
-        legend.append("text")
-            .attr("x", legendRectSize + legendSpacing)
-            .attr("y", legendRectSize - legendSpacing)
-            .text(function (idx) {
-            return legendLabel[idx];
-        });
     }
 }
 
@@ -459,26 +360,42 @@ function streamGraph(_options) {
  * @param {object} data - The json object containing the data of the keyword/author/journal.
  * @returns {string} The string for the appropriate data.
  */
-var tooltipTextCallback = function (data) {
-    var text;
-    if (data[0].type == "keyword") {
-        // tooltip text for the keyword
-        text = "<p>In the year <b>" + data[0].x + "</b>" +
-           "<br>there were <b>" + data[0].y + "</b> papers" +
-           "<br>containing the" +
-           "<br>" + data[0].type + " <b>" + data[0].name + "</b></p>";
-    } else if (data[0].type == "author") {
-        // tooltip text for the author
-        text = "<p>In the year <b>" + data[0].x + "</b>" +
-           "<br>there were <b>" + data[0].y + "</b> papers" +
-           "<br>written by " + "<b>" + data[0].name + "</b>" +
-           "<br>containing the keyword <b>" + data[0].subname + "</b></p>";
-    } else if (data[0].type == "journal") {
-        // tooltip text for the journal
-        text = "<p>In the year <b>" + data[0].x + "</b>" +
-           "<br>there were <b>" + data[0].y + "</b> papers" +
-           "<br>published in the journal " + "<b>" + data[0].name + "</b>" +
-           "<br>containing the keyword <b>" + data[0].subname + "</b></p>";
+var helperFunctions = {
+    tooltipTextCallbackStream: function (data) {
+        var dataInfo = data[0];        
+        var text = "<p>";
+        text += "In the year " + dataInfo.x + " there were " + dataInfo.y + " papers";
+        text += "<br>with the following attributes:";
+        if (dataInfo.authors.length != 0) {
+            text += "<br><b>Authors:</b>";
+            for (var N = 0; N < dataInfo.authors.length; N++) {
+                text += "<br>" + dataInfo.authors[N].label;
+            } 
+        }
+        if (dataInfo.keywords.length != 0) {
+            text += "<br><b>Containing keywords:</b>";
+            for (var N = 0; N < dataInfo.keywords.length; N++) {
+                text += "<br>" + dataInfo.keywords[N].label;
+            } 
+        }
+        if (dataInfo.journals.length != 0) {
+            dataInfo += "<br><b>Published in journals:</b>";
+            for (var N = 0; N < dataInfo.journals.length; N++) {
+                text += "<br>" + dataInfo.journals[N].label;
+            }
+        }
+        if (dataInfo.conferences.length != 0) {
+            text += "<br><b>Were presented at:</b>";
+            for (var N = 0; N < dataInfo.conferences.length; N++) {
+                text += "<br>" + dataInfo.conferences[N].label;
+            }
+        }
+        if (dataInfo.organizations.length != 0) {
+            text += "<br><b>Where authors are from:</b>";
+            for (var N = 0; N < dataInfo.organizations.length; N++) {
+                text += "<br>" + dataInfo.organizations[N].label;
+            }
+        }
+        return text;
     }
-    return text;
 }

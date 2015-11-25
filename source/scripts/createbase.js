@@ -7,25 +7,28 @@ var fs = qm.fs;
 
 var basePath = '../database/';
 // choose which Subset to load (Science or Regular) 
-var ScienceSubset = true;
-var subset = ScienceSubset ? "MicrosoftAcademicScienceSubset/" : "MicrosoftAcademicSubset/";
+var DataScienceSubset = true;
+var subset = DataScienceSubset ? "MicrosoftAcademicScienceSubset/" : "MicrosoftAcademicSubset/";
 
 // read the files
-var PaperIn = new fs.FIn(basePath + subset + 'Papers.txt');
-var AuthorIn = new fs.FIn(basePath + subset + 'Authors.txt');
 var AffiliationsIn = new fs.FIn(basePath + subset + 'Affiliations.txt');
-var PapersAuthorAffiliationsIn = new fs.FIn(basePath + subset + 'PaperAuthorAffiliations.txt');
-//var PaperReferencesIn = new fs.FIn(basePath + subset + 'PaperReferences.txt')
-var JournalsIn = new fs.FIn(basePath + subset + 'Journals.txt');
-var KeywordsIn = new fs.FIn(basePath + subset + 'PaperKeywords.txt');
+var AuthorsIn = new fs.FIn(basePath + subset + 'Authors.txt');
+var ConferenceSeriesIn = new fs.FIn(basePath + subset + 'ConferenceSeries.txt');
+var ConferenceInstancesIn = new fs.FIn(basePath + subset + 'ConferenceInstances.txt');
 var FieldsOfStudyIn = new fs.FIn(basePath + subset + 'FieldsOfStudy.txt');
+var JournalsIn = new fs.FIn(basePath + subset + 'Journals.txt');
+var PapersIn = new fs.FIn(basePath + subset + 'Papers.txt');
+var PaperAuthorAffiliationsIn = new fs.FIn(basePath + subset + 'PaperAuthorAffiliations.txt');
+var PaperKeywordsIn = new fs.FIn(basePath + subset + 'PaperKeywords.txt');
+//var PaperReferencesIn = new fs.FIn(basePath + subset + 'PaperReferences.txt')
+//var PaperUrls = new fs.FIn(basePath + subset + 'PaperUrls.txt');
 
 // creates the base with the given schema.json
-var QMinerDatabase = ScienceSubset ? "QMinerAcademicsScience/" : "QMinerAcademics/";
+var QMinerDatabase = basePath + (DataScienceSubset ? "QMinerAcademicsDataScience/" : "QMinerAcademicsData/");
 var base = new qm.Base({
     mode: "createClean",
     schemaPath: "./schema.json",
-    dbPath: basePath + QMinerDatabase
+    dbPath: QMinerDatabase
 });
 
 // helper function
@@ -35,103 +38,177 @@ var textUpperCase = function (name) {
     });
 }
 
-// import the Author data in the base
-while (!AuthorIn.eof) {
-    var authorData = AuthorIn.readLine().split("\t");
-    var id = authorData[0];
-    var name = authorData[1];
-    base.store("Authors").push({ ID: id, name: textUpperCase(name), normalizedName: name });
+// import Author in QMiner
+console.log("Authors");
+while (!AuthorsIn.eof) {
+    var data = AuthorsIn.readLine().split('\t');
+    var id = data[0];
+    var name = data[1];
+    base.store("Authors").push({
+        ID: id, 
+        name: textUpperCase(name), 
+        normalizedName: name
+    });
 }
 
-// import the Affiliations data in the base
+// import ConferenceSeries in QMiner
+console.log("ConferenceSeries");
+while (!ConferenceSeriesIn.eof) {
+    var data = ConferenceSeriesIn.readLine().split('\t');
+    var id = data[0];
+    var abbreviation = data[1];
+    var name = data[2];
+    base.store("ConferenceSeries").push({
+        ID: id, 
+        abbreviation: abbreviation,
+        name: textUpperCase(name), 
+        normalizedName: name
+    });
+}
+
+// import Affiliations in QMiner
+console.log("Affiliations");
 while (!AffiliationsIn.eof) {
-    var affiliationsData = AffiliationsIn.readLine().split("\t");
-    var id = affiliationsData[0];
-    var name = affiliationsData[1];
-    base.store("Affiliations").push({ ID: id, name: textUpperCase(name), normalizedName: name });
+    var data = AffiliationsIn.readLine().split("\t");
+    var id = data[0];
+    var name = data[1];
+    base.store("Affiliations").push({
+        ID: id, 
+        name: textUpperCase(name), 
+        normalizedName: name
+    });
 }
 
-// import the Journals data in the base
+// import Journals in QMiner
+console.log("Journals");
 while (!JournalsIn.eof) {
-    var journalsData = JournalsIn.readLine().split("\t");
-    var id = journalsData[0];
-    var name = journalsData[1];
-    base.store("Journals").push({ ID: id, name: name, normalizedName: name.toLowerCase() });
+    var data = JournalsIn.readLine().split("\t");
+    var id = data[0];
+    var name = data[1];
+    base.store("Journals").push({
+        ID: id, 
+        name: name, 
+        normalizedName: name.toLowerCase()
+    });
 }
 
-// import the FieldsOfStudy data in the base
+// import FieldsOfStudy in QMiner
+console.log("FieldsOfStudy");
 while (!FieldsOfStudyIn.eof) {
-    var fieldsOfStudyData = FieldsOfStudyIn.readLine().split("\t");
-    var id = fieldsOfStudyData[0];
-    var name = fieldsOfStudyData[1];
-    base.store("FieldsOfStudy").push({ ID: id, name: name, normalizedName: name.toLowerCase() });
+    var data = FieldsOfStudyIn.readLine().split("\t");
+    var id = data[0];
+    var name = data[1];
+    base.store("Keywords").push({
+        ID: id, 
+        name: name, 
+        normalizedName: name.toLowerCase()
+    });
 }
 
-// import the Papers data in the base
-while (!PaperIn.eof) {
-    var papersData = PaperIn.readLine().split("\t");
-    var id = papersData[0];
-    var originalName = papersData[1];
-    var normalizedName = papersData[2];
-    var publishYear = parseInt(papersData[3]);
-    var publishDate = papersData[4];
-    var DOI = papersData[5];
-    var originalVenue = papersData[6];
-    var normalizedVenue = papersData[7];
-    var journalID = papersData[8];
-    var paperRank = parseInt(papersData[9]);
+// import Papers in QMiner
+console.log("Papers");
+var conferenceCount = 0;
+while (!PapersIn.eof) {
+    var data = PapersIn.readLine().split("\t");
+    var id = data[0];
+    var originalName = data[1];
+    var normalizedName = data[2];
+    var publishYear = parseInt(data[3]);
+    var publishDate = data[4];
+    var DOI = data[5];
+    var originalVenue = data[6];
+    var normalizedVenue = data[7];
+    var journalID = data[8];
+    var conferenceSeriesID = data[9]
+    var paperRank = parseInt(data[10]);
     base.store("Papers").push({
         ID: id,
-        originalPaperTitle: originalName,
-        normalizedPaperTitle: normalizedName,
-        paperPublishYear: publishYear,
-        paperPublishDate: publishDate,
+        title: originalName,
+        normalizedTitle: normalizedName,
+        publishYear: publishYear,
+        publishDate: publishDate,
         DOI: DOI,
-        originalVenueName: originalVenue,
+        venueName: originalVenue,
         normalizedVenueName: normalizedVenue,
         paperRank: paperRank
     });
     if (base.store("Journals").recordByName(journalID) != null) {
-        base.store("Papers").recordByName(id).$addJoin("wasPublishedIn", base.store("Journals").recordByName(journalID));
+        base.store("Papers").recordByName(id).$addJoin("wasPublishedIn", 
+            base.store("Journals").recordByName(journalID));
+    }
+    if (base.store("ConferenceSeries").recordByName(conferenceSeriesID) != null) {
+        conferenceCount++;
+        base.store("Papers").recordByName(id).$addJoin("wasPresentedAt", 
+            base.store("ConferenceSeries").recordByName(conferenceSeriesID));
+    }
+}
+console.log("ConferenceCount: " + conferenceCount);
+
+// import Keywords in QMiner
+console.log("Keywords");
+while (!PaperKeywordsIn.eof) {
+    var data = PaperKeywordsIn.readLine().split("\t");
+    var paperID = data[0];
+    var keyword = data[1];
+    var fieldOfStudyID = data[2];
+    if (base.store("Keywords").recordByName(fieldOfStudyID) != null) {
+        base.store("Keywords").recordByName(fieldOfStudyID).$addJoin("inPapers", 
+            base.store("Papers").recordByName(paperID));
     }
 }
 
-// import the Keywords data in the base
-while (!KeywordsIn.eof) {
-    var keywordsData = KeywordsIn.readLine().split("\t");
-    var paperID = keywordsData[0];
-    var keyword = keywordsData[1];
-    var fieldOfStudyID = keywordsData[2];
-    
-    if (base.store("FieldsOfStudy").recordByName(fieldOfStudyID) != null) {
-        base.store("FieldsOfStudy").recordByName(fieldOfStudyID).$addJoin("inPapers", base.store("Papers").recordByName(paperID));
-    }
-}
-
-// import the PaperAuthorAffiliations data in the base
-while (!PapersAuthorAffiliationsIn.eof) {
-    var PAPData = PapersAuthorAffiliationsIn.readLine().split("\t");
-    var paperID = PAPData[0];
-    var authorID = PAPData[1];
-    var affiliationID = PAPData[2];
+// import PaperAuthorAffiliations in QMiner
+console.log("PaperAuthorAffiliations");
+while (!PaperAuthorAffiliationsIn.eof) {
+    var data = PaperAuthorAffiliationsIn.readLine().split("\t");
+    var paperID = data[0];
+    var authorID = data[1];
+    var affiliationID = data[2];
     if (base.store("Authors").recordByName(authorID) != null) {
-        base.store("Papers").recordByName(paperID).$addJoin("hasAuthors", base.store("Authors").recordByName(authorID));
+        base.store("Papers").recordByName(paperID).$addJoin("hasAuthors", 
+            base.store("Authors").recordByName(authorID));
     }
     if (base.store("Affiliations").recordByName(affiliationID) != null) {
-        base.store("Papers").recordByName(paperID).$addJoin("hasAffiliations", base.store("Affiliations").recordByName(affiliationID));
+        base.store("Papers").recordByName(paperID).$addJoin("hasAffiliations", 
+            base.store("Affiliations").recordByName(affiliationID));
     }
 }
 
-//// import the PaperReferences data in the base
-//while (!PaperReferencesIn.eof) {
-//    var PRData = PaperReferencesIn.readLine().split("\t");
-//    var paperID = PRData[0];
-//    var referencesID = PRData[1];
-//    base.store("PaperReferences").push({ ID: referencesID });
-//    if (base.store("Papers").recordByName(paperID) != null) {
-//        base.store("PaperReferences").recordByName(referencesID).$addJoin("referencedIn", base.store("Papers").recordByName(paperID));
-//    }
-//}
+// import ConferenceInstances in QMiner
+console.log("ConferenceInstances");
+while (!ConferenceInstancesIn.eof) {
+    var data = ConferenceInstancesIn.readLine().split('\t');
+    var seriesID = data[0];
+    var instanceID = data[1];
+    var abbreviation = data[2];
+    var name = data[3];
+    var location = data[4];
+    var url = data[5];
+    var startDate = data[6];
+    var endDate = data[7];
+    var abstractRegistrationDate = data[8];
+    var submissionDeadlineDate = data[9];
+    var notificationDueDate = data[10];
+    var finalVersionDueDate = data[11];
+    base.store("ConferenceInstances").push({
+        ID: instanceID, 
+        abbreviation: abbreviation, 
+        normalizedName: name.toLowerCase(),
+        name: name, 
+        location: location,
+        url: url,
+        startDate: startDate,
+        endDate: endDate,
+        abstractRegistrationDate: abstractRegistrationDate,
+        submissionDeadlineDate: submissionDeadlineDate,
+        notificationDueDate: notificationDueDate,
+        finalVersionDueDate: finalVersionDueDate
+    });
+    if (base.store("ConferenceSeries").recordByName(seriesID) != null) {
+        base.store("ConferenceInstances").recordByName(instanceID).$addJoin("isPartOfSeries", 
+            base.store("ConferenceSeries").recordByName(seriesID));
+    }
+}
 
 // close the base
 base.close();
