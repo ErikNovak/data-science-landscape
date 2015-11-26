@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 var htmlPath = __dirname + '/public/html/'
 app.get('/', function (request, response) {
-    response.sendFile(path.join(htmlPath, 'search.html'));
+    response.sendFile(path.join(htmlPath, 'index.html'));
 });
 
 server.listen('3000', function () {
@@ -151,7 +151,7 @@ var autoQuery = function (data) {
  */
 
 // querying the timestream data and sending it back
-app.post('/datascience/timestream', function (request, response) {
+app.post('datascience/timestream', function (request, response) {
     var sentData = request.body;
     var search = dataQuery(sentData.data);
     var options = {
@@ -181,13 +181,13 @@ app.post('/datascience/timestream', function (request, response) {
     response.send(data);
 })
 
-app.post('/datascience/landscape', function (request, response) {
+app.post('datascience/landscape', function (request, response) {
     var sentData = request.body;
     
     var search = dataQuery(sentData.data);
 	// filter for the years
-	startYear = sentData.options.year.start != '' ? sentData.options.year.start : -Math.Infinity;
-	endYear = sentData.options.year.end != '' ? sentData.options.year.end : Math.Infinity;
+	startYear = sentData.options.year.start != '' ? sentData.options.year.start : -Infinity;
+	endYear = sentData.options.year.end != '' ? sentData.options.year.end : Infinity;
 	search.filter(function (rec) { return startYear <= rec.publishYear && rec.publishYear < endYear });
 	
     var options = {
@@ -280,23 +280,15 @@ app.post('/datascience/landscape', function (request, response) {
         console.timeEnd("Landscape");
     }
     
-    var keywordsJson, 
-        journalsJson, 
-        conferencesJson;
-    //if (landscapeP.length < 400) {
-    //    keywordsJson = landscapeP.map(function (rec) { return { x: rec.x + 5e-2 * Math.random(), y: rec.y + 5e-2 * Math.random() } });
-    //    journalsJson = landscapeP.map(function (rec) { return { x: rec.x + 5e-2 * Math.random(), y: rec.y + 5e-2 * Math.random() } });
-    //    conferencesJson = landscapeP.map(function (rec) { return { x: rec.x + 5e-2 * Math.random(), y: rec.y + 5e-2 * Math.random() } });
-    //} else {
         // get the clusters for the keywords, journals and conference position
         var keywordsC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        keywordsJson = jsonify.landscapeClusters(keywordsC);
+        var keywordsJson = jsonify.landscapeClusters(keywordsC);
         
         var journalsC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        journalsJson = jsonify.landscapeClusters(journalsC);
+        var journalsJson = jsonify.landscapeClusters(journalsC);
         
         var conferencesC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        conferencesJson = jsonify.landscapeClusters(conferencesC);
+        var conferencesJson = jsonify.landscapeClusters(conferencesC);
     //}
     // store the data and send it
     data = {
@@ -317,14 +309,14 @@ app.post('/datascience/landscape', function (request, response) {
 });
 
 // send the data to the cient
-app.post('/autocomplete', function (request, response) {
+app.post('autocomplete', function (request, response) {
     var req = request.body;
     // for getting the the autocomplete list
     var auto = autoQuery(req);
     response.send(auto);
 })
 
-app.post('/pdf', function (request, response) {
+app.post('pdf', function (request, response) {
     // get the .xml file and save it
     var dataJSON = request.body;
     fs.writeFile(path.join(__dirname, 'pics/chart.xml'), dataJSON.xml, {}, function (err) { if (err) { console.log(err); } });

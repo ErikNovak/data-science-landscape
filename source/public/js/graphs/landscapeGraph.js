@@ -7,8 +7,8 @@ function landscapeGraph(_options) {
     // setting
     var options = $.extend({
         containerName: undefined,                                               // the dom that contains the svg element
-        tooltipTextCallback: tooltipTextCallbackLandscape,                      // the callback that generates the text info on the chart (defined at the end of the file)
-        radius: { point: 1, hexagon: 5 },
+        tooltipTextCallback: LHelperFunctions.tooltipTextCallbackLandscape,     // the callback that generates the text info on the chart (defined at the end of the file)
+        radius: { point: 2, hexagon: 5 },
         margin: { top: 20, left: 20, bottom: 20, right: 20 },               
         color: {
             shadeLight: "#A28DE6", shadeDark: "#4724B9",  
@@ -178,11 +178,11 @@ function landscapeGraph(_options) {
             
             d3.select("#hexagons").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
-            // change the points position and size
-            //chartBody.selectAll(".points")
-            //    .attr("cx", function (d) { return xScale(d.x); })
-            //    .attr("cy", function (d) { return yScale(d.y); })
-            //    .attr("r", function (d) { return options.radius.point });
+             // change the points position and size
+             chartBody.selectAll(".points")
+                 .attr("cx", function (d) { return xScale(d.x); })
+                 .attr("cy", function (d) { return yScale(d.y); })
+                 .attr("r", function (d) { return options.radius.point * d3.event.scale });
             
             // change the keywords position and the which are shown
             var keywordTags = chartBody.selectAll(".keyword")
@@ -417,35 +417,46 @@ function landscapeGraph(_options) {
         //    .attr("fill", options.color.text);
         //tagsVisibility(conferenceSeriesTags);
 
+        // add the points
+        var points = chartBody.selectAll(".points")
+                .data(landscapeData.main);
+        points.exit().remove();
+         points.enter().append("circle")
+                .attr("class", "points")
+                .attr("cx", function (d) { return xScale(d.x); })
+                .attr("cy", function (d) { return yScale(d.y); })
+                .attr("r", options.radius.point)
+                .attr("fill", options.color.shadeLight);
+
         /**
          * Additional functionality
          * Creates the box containing the paper information when the point is clicked.
          */ 
-        //chartBody.selectAll(".points")
-        //    .on("click", function (d, idx) {
+        chartBody.selectAll(".points")
+            .on("mouseover", function (d, idx) {
             
-        //    var coords = d3.mouse(this);
-        //    xCoord = xScale.invert(coords[0]);
-        //    yCoord = yScale.invert(coords[1]);
+            var coords = d3.mouse(this);
+            xCoord = xScale.invert(coords[0]);
+            yCoord = yScale.invert(coords[1]);
 
-        //    // create the tooltip with the point's information
-        //    if (options.tooltipTextCallback) {
-        //        var tooltipDiv = $(options.containerName + " .graph-tooltip");
-        //        tooltipDiv.html(options.tooltipTextCallback(d));
-        //        var x = coords[0] + options.margin.left;
-        //        var y = coords[1] + options.margin.top;
-        //        var xOffset = (coords[0] > ($(options.containerName).width() / 2)) ? (-tooltipDiv.outerWidth() - 5) : 5;
-        //        var yOffset = (coords[1] > ($(options.containerName).height() / 2)) ? (-tooltipDiv.outerHeight() - 5) : 5;
-        //        var xAdditionalOffset = 10; // additional x offset
-        //        var yAdditionalOffset = 0;  // additional y offset
-        //        tooltipDiv.css({ left: (x + xOffset + xAdditionalOffset) + "px", top: (y + yOffset + yAdditionalOffset) + "px" })
-        //            .removeClass("notvisible");
-        //    }
-        //})
-        //    .on("mouseout", function (d, idx) {
-        //    //Hide the tooltip
-        //    $(options.containerName + " .graph-tooltip").addClass("notvisible");
-        //});
+            // create the tooltip with the point's information
+            if (options.tooltipTextCallback) {
+                var tooltipDiv = $(options.containerName + " .graph-tooltip");
+                tooltipDiv.html(options.tooltipTextCallback(d));
+                var x = coords[0] + options.margin.left;
+                var y = coords[1] + options.margin.top;
+                var xOffset = (coords[0] > ($(options.containerName).width() / 2)) ? (-tooltipDiv.outerWidth() - 5) : 5;
+                var yOffset = (coords[1] > ($(options.containerName).height() / 2)) ? (-tooltipDiv.outerHeight() - 5) : 5;
+                var xAdditionalOffset = 10; // additional x offset
+                var yAdditionalOffset = 0;  // additional y offset
+                tooltipDiv.css({ left: (x + xOffset + xAdditionalOffset) + "px", top: (y + yOffset + yAdditionalOffset) + "px" })
+                    .removeClass("notvisible");
+            }
+        })
+            .on("mouseout", function (d, idx) {
+            //Hide the tooltip
+            $(options.containerName + " .graph-tooltip").addClass("notvisible");
+        });
     }
 }
 
@@ -454,20 +465,22 @@ function landscapeGraph(_options) {
  * @param {object} data - The json object containing the data of the paper.
  * @returns {string} The string for the appropriate data.
  */
-var tooltipTextCallbackLandscape = function (data) {
-    // the paper title
-    var text = "<b>Paper title:</b><br>" + data.title + "<br>";
-    // the paper keywords
-    text += "<b>Keywords:</b> ";
-    for (var KeywordN = 0; KeywordN < data.keywords.length; KeywordN++) {
-        text += data.keywords[KeywordN];
-        if (KeywordN != data.keywords.length - 1) { text += ", "; }
+LHelperFunctions = {
+    tooltipTextCallbackLandscape : function (data) {
+        // the paper title
+        var text = "<b>Paper title:</b><br>" + data.title + "<br>";
+        // the paper keywords
+        text += "<b>Keywords:</b> ";
+        for (var KeywordN = 0; KeywordN < data.keywords.length; KeywordN++) {
+            text += data.keywords[KeywordN];
+            if (KeywordN != data.keywords.length - 1) { text += ", "; }
+        }
+        text += "<br>";
+        // the paper authors
+        text += "<b>Authors:</b>";
+        for (var AuthorN = 0; AuthorN < data.authors.length; AuthorN++) {
+            text += "<br>" + data.authors[AuthorN];
+        }
+        return text;
     }
-    text += "<br>";
-    // the paper authors
-    text += "<b>Authors:</b>";
-    for (var AuthorN = 0; AuthorN < data.authors.length; AuthorN++) {
-        text += "<br>" + data.authors[AuthorN];
-    }
-    return text;
 }

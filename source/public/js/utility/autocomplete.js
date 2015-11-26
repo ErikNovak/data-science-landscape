@@ -49,7 +49,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: { search: "all", value: tag },
                 success: function (data) {
                     var autocompleteBasic = data;
@@ -179,7 +179,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: {  value: tag, search: "keywords" },
                 success: function (data) {
                     console.log("Success");
@@ -243,7 +243,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: {  value: tag, search: "authors" },
                 success: function (data) {
                     var autocompleteAuthor = data;
@@ -307,7 +307,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: { value: tag, search: "journals" },
                 success: function (data) {
                     var autocompleteJournal = data;
@@ -371,7 +371,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: { value: tag, search: "organizations" },
                 success: function (data) {
                     var autocompleteOrganizations = data;
@@ -435,7 +435,7 @@ $(function () {
             }
             $.ajax({
                 type: 'POST',
-                url: '/autocomplete',
+                url: 'autocomplete',
                 data: { value: tag, search: "conferenceSeries" },
                 success: function (data) {
                     var autocompleteConferenceSeries = data;

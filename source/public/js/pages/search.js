@@ -31,7 +31,7 @@ var search = {
             case ('Timestream chart'):
                 $.ajax({
                     type: 'POST',
-                    url: '/datascience/timestream',
+                    url: 'datascience/timestream',
                     cache: false,
                     data: { data: search, options: additionalOptions },
                     success: function (data) {
@@ -50,7 +50,7 @@ var search = {
             case ('Academic landscape'):
                 $.ajax({
                     type: 'POST',
-                    url: '/datascience/landscape',
+                    url: 'datascience/landscape',
                     cache: false,
                     data: { data: search, options: additionalOptions },
                     success: function (data) {
