@@ -80,9 +80,9 @@ $(function () {
                         return li;
                     }
                     // trigger arrow key press
-                    var e = $.Event("keydown");
-                    e.which = 40;                       // down key press
-                    $("#basic_searchbar-tokenfield").trigger(e);
+                    var keydown = $.Event("keydown");
+                    keydown.which = 40;
+                    $("#basic_searchbar-tokenfield").trigger(keydown);
                 }
             });
         }, 400)

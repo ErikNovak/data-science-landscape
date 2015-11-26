@@ -61,9 +61,9 @@ var search = {
                             $("#graph-colChange").addClass("col-md-10").removeClass("col-md-12");
                             var graph = new landscapeGraph(data.options);
                             graph.setData(data);
+							$(".chartOptions").show();
                         }
                         $(".wait-content").hide();
-                        $(".chartOptions").show();
                     }
                 })
                 break;

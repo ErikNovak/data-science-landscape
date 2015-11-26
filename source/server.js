@@ -21,7 +21,7 @@ app.get('/', function (request, response) {
 });
 
 server.listen('3000', function () {
-    console.log("Listening at the port http://localhost:3000/");
+    console.log("Listening port 3000: at http://aidemo.ijs.si/datascience/");
 });
 
 /**
@@ -97,7 +97,7 @@ var dataQuery = function (data) {
     return result;
 }
 
-// query the data for autocomplete
+// query data for autocomplete
 var autoQuery = function (data) {
     var result = [];
     var stores;
@@ -122,8 +122,11 @@ var autoQuery = function (data) {
     }
     // search through every stores
     for (var StoreN = 0; StoreN < stores.length; StoreN++) {
-        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" } };
+		console.time("Query");
+        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" },  $limit: 10 };
         var res = base.search(query);
+		console.timeEnd("Query")
+		console.time("Array")
         // get the first 10 of each query
         var arr = res.map(function (record) {
             var type = stores[StoreN].type;
@@ -131,8 +134,8 @@ var autoQuery = function (data) {
             var label = record.name;
             return { type: type, value: value, label : label };
         });
-        
-        result = result.concat(arr.slice(0, 10));
+        console.timeEnd("Array")
+        result = result.concat(arr);
     }
     // removing duplicates
     var uniqueResult = [];
@@ -151,7 +154,7 @@ var autoQuery = function (data) {
  */
 
 // querying the timestream data and sending it back
-app.post('datascience/timestream', function (request, response) {
+app.post('/datascience/timestream', function (request, response) {
     var sentData = request.body;
     var search = dataQuery(sentData.data);
     var options = {
@@ -181,7 +184,7 @@ app.post('datascience/timestream', function (request, response) {
     response.send(data);
 })
 
-app.post('datascience/landscape', function (request, response) {
+app.post('/datascience/landscape', function (request, response) {
     var sentData = request.body;
     
     var search = dataQuery(sentData.data);
@@ -309,14 +312,14 @@ app.post('datascience/landscape', function (request, response) {
 });
 
 // send the data to the cient
-app.post('autocomplete', function (request, response) {
+app.post('/autocomplete', function (request, response) {
     var req = request.body;
     // for getting the the autocomplete list
     var auto = autoQuery(req);
     response.send(auto);
 })
 
-app.post('pdf', function (request, response) {
+app.post('/pdf', function (request, response) {
     // get the .xml file and save it
     var dataJSON = request.body;
     fs.writeFile(path.join(__dirname, 'pics/chart.xml'), dataJSON.xml, {}, function (err) { if (err) { console.log(err); } });
