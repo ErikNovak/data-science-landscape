@@ -21,6 +21,8 @@ $(function () {
             checkbox.style.visibility = "visible";
         }
         // draw the chart
+		$(".graph-content").hide();
+        $(".chartOptions").hide();
         search.drawChart();
     })
 });

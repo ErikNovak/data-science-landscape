@@ -7,12 +7,10 @@ var http = require('http'),
     express = require('express'),
     bodyParser = require('body-parser'),
     fs = require('fs'),
-    path = require('path'),
-    socketio = require('socket.io');
+    path = require('path');
 
 var app = express();
 var server = http.Server(app);
-var io = socketio.listen(server);
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -25,15 +23,6 @@ app.get('/', function (request, response) {
 server.listen('3000', function () {
     console.log("Listening at the port http://localhost:3000/");
 });
-
-var clients = {};
-io.on('connection', function (socket) {
-    var clientIp = socket.request.connection.remoteAddress;
-    clients[clientIp] = socket;
-    socket.on('disconnect', function () {
-        delete clients[clientIp];
-    })
-})
 
 /**
  * QMiner database.
@@ -194,11 +183,13 @@ app.post('/datascience/timestream', function (request, response) {
 
 app.post('/datascience/landscape', function (request, response) {
     var sentData = request.body;
-    // get the client IP
-    var IP = request.connection.remoteAddress;
-    var socket = clients[IP];
     
     var search = dataQuery(sentData.data);
+	// filter for the years
+	startYear = sentData.options.year.start != '' ? sentData.options.year.start : -Math.Infinity;
+	endYear = sentData.options.year.end != '' ? sentData.options.year.end : Math.Infinity;
+	search.filter(function (rec) { return startYear <= rec.publishYear && rec.publishYear < endYear });
+	
     var options = {
         containerName: ".graph-content",
         //margin: {
