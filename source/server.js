@@ -122,11 +122,8 @@ var autoQuery = function (data) {
     }
     // search through every stores
     for (var StoreN = 0; StoreN < stores.length; StoreN++) {
-		console.time("Query");
         var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" },  $limit: 10 };
         var res = base.search(query);
-		console.timeEnd("Query")
-		console.time("Array")
         // get the first 10 of each query
         var arr = res.map(function (record) {
             var type = stores[StoreN].type;
@@ -134,7 +131,6 @@ var autoQuery = function (data) {
             var label = record.name;
             return { type: type, value: value, label : label };
         });
-        console.timeEnd("Array")
         result = result.concat(arr);
     }
     // removing duplicates
