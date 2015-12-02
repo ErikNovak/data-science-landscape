@@ -5,13 +5,15 @@
 body {
     height: 100%;
     width: 100%;
-    background-color: #e6e6e6;
+    background-color: #ffffff;
 }
 
 
 /* top navigation bar */
 .navbar-headliner {
-    color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    color: #730000;
 }
 
 .navbar {
@@ -26,14 +28,20 @@ body {
 }
 
 .navbar-header .navbar-brand {
-    color: white;
+    color: #730000;
 }
 
 .navbar-default {
-    background-color: #23241f;
+    background-color: #fff;
     border-color: transparent;
 }
 
+.logo {
+    font-family:Baskerville, "Palatino Linotype", Palatino, "Century Schoolbook L", "Times New Roman", serif;
+    color: #730000;
+    font-weight: 900;
+    font-size: 16px;
+}
 
 /* search bar */
 .searchbar-container {

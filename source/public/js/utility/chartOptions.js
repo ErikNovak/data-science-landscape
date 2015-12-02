@@ -26,14 +26,13 @@ $(function () {
             visibleClusters.push(currentClust);
         }
     }
-
+    
     // spin for the keywords text size
     $('#spinKeyword').spinbox({
-        value: '14px',
+        value: '14',
         min: 0,
         max: 30,
         step: 1,
-        units: ['px']
     });
     
     $('#spinKeyword').on('changed.fu.spinbox', function (event, value) {
@@ -41,18 +40,31 @@ $(function () {
         svg.selectAll(".keyword")
             .attr("font-size", value);
     });
-
+    
     $('#spinJournal').spinbox({
-        value: '10px',
+        value: '10',
         min: 0,
         max: 30,
         step: 1,
-        units: ['px']
     });
-
+    
     $('#spinJournal').on('changed.fu.spinbox', function (event, value) {
         var svg = d3.select('.graph-content svg');
         svg.selectAll(".journal")
+            .attr("font-size", value);
+    });
+    
+    // spin for the keywords text size
+    $('#spinConference').spinbox({
+        value: '10',
+        min: 0,
+        max: 30,
+        step: 1
+    });
+    
+    $('#spinConference').on('changed.fu.spinbox', function (event, value) {
+        var svg = d3.select('.graph-content svg');
+        svg.selectAll(".conference")
             .attr("font-size", value);
     });
     
@@ -72,7 +84,7 @@ $(function () {
             $("#spinKeyword").hide();
         }
     });
-
+    
     // journal checkbox
     $('#checkJournal').on('click', function () {
         if ($(this).is(":checked")) {
@@ -89,4 +101,30 @@ $(function () {
             $("#spinJournal").hide();
         }
     })
-})
+    
+    // journal checkbox
+    $('#checkConference').on('click', function () {
+        if ($(this).is(":checked")) {
+            var svg = d3.select('.graph-content svg');
+            var journal = svg.selectAll(".conference").filter(".hidden")
+                .classed("hidden", false);
+            tagsVisibility(journal);
+            $("#spinConference").show();
+        } else {
+            // get the keywords and hide them
+            var svg = d3.select('.graph-content svg');
+            svg.selectAll(".conference")
+                .attr("class", "conference hidden");
+            $("#spinConference").hide();
+        }
+    });
+});
+
+var defaultOptions = function () {
+    $("#checkKeyword").prop("checked", true);
+    $("#checkJournal").prop("checked", true);
+    $("#checkConference").prop("checked", true);
+    $("#spinKeyword").show();
+    $("#spinJournal").show();
+    $("#spinConference").show();
+}

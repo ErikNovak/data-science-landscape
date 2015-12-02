@@ -70,7 +70,7 @@ DataScience.put("High performance computing", 0);
 
 // Hand given by feeling
 DataScience.put("Semantic Web", 0);
-DataScience.put("Semantic Web Stack", 0);
+DataScience.put("Semantic web stack", 0);
 DataScience.put("Semantic tehnology", 0);
 DataScience.put("Semantic memory", 0);
 DataScience.put("Semantic analytics", 0);

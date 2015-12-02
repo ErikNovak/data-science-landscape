@@ -8,12 +8,12 @@ function landscapeGraph(_options) {
     var options = $.extend({
         containerName: undefined,                                               // the dom that contains the svg element
         tooltipTextCallback: LHelperFunctions.tooltipTextCallbackLandscape,     // the callback that generates the text info on the chart (defined at the end of the file)
-        radius: { point: 2, hexagon: 5 },
+        radius: { point: 2.5, hexagon: 5 },
         margin: { top: 20, left: 20, bottom: 20, right: 20 },               
         color: {
             shadeLight: "#A28DE6", shadeDark: "#4724B9",  
             addShadeLight: "#FFEF6B", addShadeDark: "#FFE510",
-            background: "#260788", text: "#D6D3DE"
+            background: "#260788", text: "#FFFFFF"
         }
     }, _options);
     
@@ -178,8 +178,8 @@ function landscapeGraph(_options) {
             
             d3.select("#hexagons").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
             
-             // change the points position and size
-             chartBody.selectAll(".points")
+            // change the points position and size
+            chartBody.selectAll(".points")
                  .attr("cx", function (d) { return xScale(d.x); })
                  .attr("cy", function (d) { return yScale(d.y); })
                  .attr("r", function (d) { return options.radius.point * d3.event.scale });
@@ -190,7 +190,7 @@ function landscapeGraph(_options) {
                 .attr("y", function (d) { return yScale(d.y); })
             
             if ($("#checkKeyword").is(":checked")) {
-                chartBody.selectAll(".keyword").filter(".hidden")
+                keywordTags.filter(".hidden")
                 .classed("hidden", false);
                 tagsVisibility(keywordTags);
             }
@@ -198,21 +198,25 @@ function landscapeGraph(_options) {
             var journalTags = chartBody.selectAll(".journal")
                 .attr("x", function (d) { return xScale(d.x); })
                 .attr("y", function (d) { return yScale(d.y); })
-
+            
             if ($("#checkJournal").is(":checked")) {
-                chartBody.selectAll(".journal").filter(".hidden")
+                journalTags.filter(".hidden")
                 .classed("hidden", false);
                 tagsVisibility(journalTags);
             }
-            //// change the journals position and the which are shown
-            //chartBody.selectAll(".conference").filter(".hidden")
-            //    .classed("hidden-keyword", false);
+            // change the journals position and the which are shown
+            chartBody.selectAll(".conference").filter(".hidden")
+                .classed("hidden-keyword", false);
             
-            //var conferenceTags = chartBody.selectAll(".conference")
-            //    .attr("x", function (d) { return xScale(d.x); })
-            //    .attr("y", function (d) { return yScale(d.y); })
-            //    .attr("font-size", "12px");
-            //tagsVisibility(conferenceTags);
+            var conferenceTags = chartBody.selectAll(".conference")
+                .attr("x", function (d) { return xScale(d.x); })
+                .attr("y", function (d) { return yScale(d.y); });
+            
+            if ($("#checkConference").is(":checked")) {
+                conferenceTags.filter(".hidden")
+                .classed("hidden", false);
+                tagsVisibility(conferenceTags);
+            }
         }
         zoom.on("zoom", onZoom);
         
@@ -237,18 +241,29 @@ function landscapeGraph(_options) {
             .style("fill", function (d) { return cShadowScale(d.length); });
         
         // create the additional shade
-        var hexbinAdd = d3.hexbin()
-            .size([width, height])
-            .radius(options.radius.hexagon / 2);
+        //var hexbinAdd = d3.hexbin()
+        //    .size([width, height])
+        //    .radius(options.radius.hexagon / 2);
         
-        var hexagonsAdd = hexagons.selectAll(".HexagonAdd")
-            .data(hexbinAdd(landscapeData.highlight.map(function (d) { return [xScale(d.x), yScale(d.y)]; })));
+        //var hexagonsAdd = hexagons.selectAll(".HexagonAdd")
+        //    .data(hexbinAdd(landscapeData.highlight.map(function (d) { return [xScale(d.x), yScale(d.y)]; })));
         
-        hexagonsAdd.enter().append("path")
-            .attr("class", "HexagonAdd")
-            .attr("d", hexbinAdd.hexagon())
-            .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .style("fill", function (d) { return cAddScale(d.length); });
+        //hexagonsAdd.enter().append("path")
+        //    .attr("class", "HexagonAdd")
+        //    .attr("d", hexbinAdd.hexagon())
+        //    .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
+        //    .style("fill", function (d) { return cAddScale(d.length); });
+        
+        // add the points
+        var points = chartBody.selectAll(".points")
+                .data(landscapeData.highlight.length != 0 ? landscapeData.highlight : landscapeData.main);
+        points.exit().remove();
+        points.enter().append("circle")
+                .attr("class", "points")
+                .attr("cx", function (d) { return xScale(d.x); })
+                .attr("cy", function (d) { return yScale(d.y); })
+                .attr("r", options.radius.point)
+                .attr("fill", landscapeData.highlight.length != 0 ? options.color.addShadeLight : options.color.shadeLight);
         
         /*
          * Sets the visibility of the keywords tags. If two are covering
@@ -291,7 +306,7 @@ function landscapeGraph(_options) {
             // get the points, that are close to the journals position 
             closePoints = $.grep(landscapeData.main, function (point) {
                 return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 20;
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 30;
             });
             if (closePoints.length == 0) { return; }
             // get the frequency of the journals
@@ -306,20 +321,27 @@ function landscapeGraph(_options) {
                     }
                 }
             }
-            // get the journal with the maximum frequency
-            var num = 0;
-            var topJournal;
-            var journals = Object.keys(journalFrequency);
-            for (var KeyN = 0; KeyN < journals.length; KeyN++) {
-                var Kn = journals[KeyN];
-                if (num < journalFrequency[Kn]) {
-                    num = journalFrequency[Kn];
-                    topJournal = Kn;
-                }
+            if (Object.keys(journalFrequency).length == 0) {
+                return;
             }
-            return topJournal;
+            if (landscapeData.highlight.length != 0) {
+                // get the journal with the maximum frequency
+                var num = 0;
+                var topJournal;
+                var journals = Object.keys(journalFrequency);
+                for (var KeyN = 0; KeyN < journals.length; KeyN++) {
+                    var Kn = journals[KeyN];
+                    if (num < journalFrequency[Kn]) {
+                        num = journalFrequency[Kn];
+                        topJournal = Kn;
+                    }
+                }
+                return topJournal;
+            } else {
+                return LHelperFunctions.getTag(journalFrequency);
+            }
         })
-            .attr("font-size", $("#spinJournalInput").val())
+            .attr("font-size", $("#spinJournal input").val() + "px")
             .attr("font-family", "sans-serif")
             .attr("fill", "#FFFF00");
         tagsVisibility(journalTags);
@@ -336,7 +358,7 @@ function landscapeGraph(_options) {
             // get the points, that are close to the keyword position 
             closePoints = $.grep(landscapeData.main, function (point) {
                 return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 20;
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < (landscapeData.highlight.length != 0 ? 10 : 30);
             });
             if (closePoints.length == 0) { return; }
             
@@ -352,82 +374,81 @@ function landscapeGraph(_options) {
                     }
                 }
             }
-            // get the keyword with the maximum frequency
-            var num = 0;
-            var topKeyword;
-            var keywords = Object.keys(keywordFrequency);
-            for (var KeyN = 0; KeyN < keywords.length; KeyN++) {
-                var Kn = keywords[KeyN];
-                if (num < keywordFrequency[Kn]) {
-                    num = keywordFrequency[Kn];
-                    topKeyword = Kn;
-                }
+            if (Object.keys(keywordFrequency).length == 0) {
+                return;
             }
-            return topKeyword;
+            if (landscapeData.highlight.length != 0) {
+                // get the keyword with the maximum frequency
+                var num = 0;
+                var topKeyword;
+                var keywords = Object.keys(keywordFrequency);
+                for (var KeyN = 0; KeyN < keywords.length; KeyN++) {
+                    var Kn = keywords[KeyN];
+                    if (num < keywordFrequency[Kn]) {
+                        num = keywordFrequency[Kn];
+                        topKeyword = Kn;
+                    }
+                }
+                return topKeyword;
+            } else {
+                return LHelperFunctions.getTag(keywordFrequency);
+            }
         })
-            .attr("font-size", $("#spinKeywordInput").val())
+            .attr("font-size", $("#spinKeyword input").val() + "px")
             .attr("font-weight", "bold")
             .attr("font-family", "sans-serif")
             .attr("fill", options.color.text);
         tagsVisibility(keywordTags);
         
-        //// create the conference series tags
-        //var conferenceSeriesTags = chartBody.selectAll(".conference")
-        //    .data(clusterData.conferences);
-        //conferenceSeriesTags.exit().remove();
-        //conferenceSeriesTags.enter().append("text")
-        //    .attr("class", "conference")
-        //    .attr("x", function (d) { return xScale(d.x); })
-        //    .attr("y", function (d) { return yScale(d.y) - 7; })
-        //    .text(function (d) {
-        //    // get the points, that are close to the conferences position 
-        //    closePoints = $.grep(landscapeData.main, function (point) {
-        //        return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-        //                        Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 20;
-        //    });
-        //    if (closePoints.length == 0) { return; }
-        //    // get the frequency of the conferences
-        //    var conferenceFrequency = {};
-        //    for (var MatN = 0; MatN < closePoints.length; MatN++) {
-        //        var conference = closePoints[MatN].conference;
-        //        for (var KeyN = 0; KeyN < conference.length; KeyN++) {
-        //            if (conferenceFrequency[conference[KeyN]] != null) {
-        //                conferenceFrequency[conference[KeyN]] += 1;
-        //            } else {
-        //                conferenceFrequency[conference[KeyN]] = 1;
-        //            }
-        //        }
-        //    }
-        //    // get the conference with the maximum frequency
-        //    var num = 0;
-        //    var topConference;
-        //    var conferences = Object.keys(conferenceFrequency);
-        //    for (var KeyN = 0; KeyN < conferences.length; KeyN++) {
-        //        var Kn = conferences[KeyN];
-        //        if (num < conferenceFrequency[Kn]) {
-        //            num = conferenceFrequency[Kn];
-        //            topConference = Kn;
-        //        }
-        //    }
-        //    return topConference;
-        //})
-        //    .attr("font-size", "12px")
-        //    .attr("font-weight", "bold")
-        //    .attr("font-family", "sans-serif")
-        //    .attr("fill", options.color.text);
-        //tagsVisibility(conferenceSeriesTags);
-
-        // add the points
-        var points = chartBody.selectAll(".points")
-                .data(landscapeData.main);
-        points.exit().remove();
-         points.enter().append("circle")
-                .attr("class", "points")
-                .attr("cx", function (d) { return xScale(d.x); })
-                .attr("cy", function (d) { return yScale(d.y); })
-                .attr("r", options.radius.point)
-                .attr("fill", options.color.shadeLight);
-
+        // create the conference series tags
+        var conferenceSeriesTags = chartBody.selectAll(".conference")
+            .data(clusterData.conferences);
+        conferenceSeriesTags.exit().remove();
+        conferenceSeriesTags.enter().append("text")
+            .attr("class", "conference")
+            .attr("x", function (d) { return xScale(d.x); })
+            .attr("y", function (d) { return yScale(d.y); })
+            .text(function (d) {
+            // get the points, that are close to the conferences position 
+            closePoints = $.grep(landscapeData.main, function (point) {
+                return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 20;
+            });
+            if (closePoints.length == 0) { return; }
+            // get the frequency of the conferences
+            var conferenceFrequency = {};
+            for (var MatN = 0; MatN < closePoints.length; MatN++) {
+                var conference = closePoints[MatN].conference;
+                if (conferenceFrequency[conference] != null) {
+                    conferenceFrequency[conference] += 1;
+                } else {
+                    conferenceFrequency[conference] = 1;
+                }
+            }
+            if (Object.keys(conferenceFrequency).length == 0) {
+                return;
+            }
+            //if (landscapeData.highlight.length != 0) {
+            //    // get the conference with the maximum frequency
+            //    var num = 0;
+            //    var topConference;
+            //    var conferences = Object.keys(conferenceFrequency);
+            //    for (var KeyN = 0; KeyN < conferences.length; KeyN++) {
+            //        var Kn = conferences[KeyN];
+            //        if (num < conferenceFrequency[Kn]) {
+            //            num = conferenceFrequency[Kn];
+            //            topConference = Kn;
+            //        }
+            //    }
+            //    return topConference;
+            //}
+            return LHelperFunctions.getTag(conferenceFrequency);
+        })
+            .attr("font-size", $("#spinConference input").val() + "px")
+            .attr("font-family", "sans-serif")
+            .attr("fill", "#FF1800");
+        tagsVisibility(conferenceSeriesTags);
+        
         /**
          * Additional functionality
          * Creates the box containing the paper information when the point is clicked.
@@ -438,7 +459,7 @@ function landscapeGraph(_options) {
             var coords = d3.mouse(this);
             xCoord = xScale.invert(coords[0]);
             yCoord = yScale.invert(coords[1]);
-
+            
             // create the tooltip with the point's information
             if (options.tooltipTextCallback) {
                 var tooltipDiv = $(options.containerName + " .graph-tooltip");
@@ -482,5 +503,24 @@ LHelperFunctions = {
             text += "<br>" + data.authors[AuthorN];
         }
         return text;
+    },
+    getTag : function (json) {
+        // create an array of key-values
+        var jsonArr = [];
+        for (key in json) {
+            jsonArr.push([key, json[key]]);
+        }
+        jsonArr.sort(function (a, b) { return a[1] - b[1]; });
+        // get the distribution of the values
+        var distribution = [0, jsonArr[0][1]]; // add the biggest value
+        for (var i = 1; i < jsonArr.length; i++) {
+            distribution.push(distribution[i - 1] + jsonArr[i][1]);
+        }
+        var diceToss = Math.floor(Math.random() * distribution[distribution.length - 1]);
+        for (var i = 0; i < distribution.length - 1; i++) {
+            if (distribution[i] <= diceToss && diceToss < distribution[i + 1]) {
+                return jsonArr[i][0];
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ app.get('/', function (request, response) {
 });
 
 server.listen('3000', function () {
-    console.log("Listening port 3000: at http://aidemo.ijs.si/datascience/");
+    console.log("Listening port localhost:3000");
 });
 
 /**
@@ -38,13 +38,6 @@ var base = new qm.Base({
     mode: 'openReadOnly',
     dbPath: basePath + "QMinerAcademicsDataScience/"
 });
-
-var ftr = new qm.FeatureSpace(base, [
-    { type: "text", source: "Papers", field: "title" },                                         // paper title
-    { type: "text", source: { store: "Papers", join: "containsKeywords" }, field: "name" },     // paper keywords
-    { type: "text", source: { store: "Papers", join: "wasPublishedIn" }, field: "name" },       // paper journals
-    { type: "text", source: { store: "Papers", join: "wasPresentedAt" }, field: "name" }         // paper conferences
-]);
 
 /**
  * Queries the data from the database.
@@ -122,11 +115,8 @@ var autoQuery = function (data) {
     }
     // search through every stores
     for (var StoreN = 0; StoreN < stores.length; StoreN++) {
-		console.time("Query");
-        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" },  $limit: 10 };
+        var query = { $from: stores[StoreN].store, normalizedName: { $wc: "*" + data.value.toLowerCase() + "*" }, $limit: 10 };
         var res = base.search(query);
-		console.timeEnd("Query")
-		console.time("Array")
         // get the first 10 of each query
         var arr = res.map(function (record) {
             var type = stores[StoreN].type;
@@ -134,7 +124,6 @@ var autoQuery = function (data) {
             var label = record.name;
             return { type: type, value: value, label : label };
         });
-        console.timeEnd("Array")
         result = result.concat(arr);
     }
     // removing duplicates
@@ -188,11 +177,11 @@ app.post('/datascience/landscape', function (request, response) {
     var sentData = request.body;
     
     var search = dataQuery(sentData.data);
-	// filter for the years
-	startYear = sentData.options.year.start != '' ? sentData.options.year.start : -Infinity;
-	endYear = sentData.options.year.end != '' ? sentData.options.year.end : Infinity;
-	search.filter(function (rec) { return startYear <= rec.publishYear && rec.publishYear < endYear });
-	
+    // filter for the years
+    startYear = sentData.options.year.start != '' ? sentData.options.year.start : -Infinity;
+    endYear = sentData.options.year.end != '' ? sentData.options.year.end : Infinity;
+    search.filter(function (rec) { return startYear <= rec.publishYear && rec.publishYear < endYear });
+    
     var options = {
         containerName: ".graph-content",
         //margin: {
@@ -211,32 +200,68 @@ app.post('/datascience/landscape', function (request, response) {
      *  Get the data for the landscape
      */
     // set the upper number limit of papers
-    var limit = 20000;
+    var limit = 5000;
     // the landscape and additional points
     var landscapeP = null,
         additionalP = [];
+    var ftr = new qm.FeatureSpace(base, [
+        { type: "text", source: "Papers", field: "title" },                                         // paper title
+        { type: "text", source: { store: "Papers", join: "containsKeywords" }, field: "name" },     // paper keywords
+        { type: "text", source: { store: "Papers", join: "wasPublishedIn" }, field: "name" },       // paper journals
+        { type: "text", source: { store: "Papers", join: "wasPresentedAt" }, field: "name" }        // paper conferences
+    ]);
     if (sentData.options.wholeLandscape == "true") {
         console.time("Landscape");
         // get the coordinates and clusters of the whole landscape
         
         console.time("MegaSet");
-        var allPapersN = base.store("Papers").allRecords.length;
-        var sampleKeywords = base.store("Keywords").allRecords.sample(10000);
-        var megaSet = sampleKeywords[0].inPapers.sample(Math.ceil(sampleKeywords[0].inPapers.length / allPapersN * limit));
-        for (var PapN = 1; PapN < sampleKeywords.length; PapN++) {
-            megaSet = megaSet.setUnion(sampleKeywords[PapN].inPapers.sample(Math.ceil(sampleKeywords[PapN].inPapers.length / allPapersN * limit)));
-        }
+        var finID = new qm.fs.openRead('./megaData/MegaSetID.bin');
+        var PaperID = new qm.la.IntVector(); PaperID.load(finID);
+        var megaSet = base.store("Papers").newRecordSet(PaperID);
+        console.log("Number of records: " + megaSet.length);
+        //var allPapersN = base.store("Papers").allRecords.length;
+        //var sampleKeywords = base.store("Keywords").allRecords;
+        //var megaSet = sampleKeywords[0].inPapers.sample(Math.ceil(sampleKeywords[0].inPapers.length / allPapersN * limit));
+        //for (var PapN = 1; PapN < sampleKeywords.length; PapN++) {
+        //    console.log(PapN);
+        //    megaSet = megaSet.setUnion(sampleKeywords[PapN].inPapers.sample(Math.ceil(sampleKeywords[PapN].inPapers.length / allPapersN * limit)));
+        //}
+        //var fout = new qm.fs.openWrite('./megaData/MegaSetID.bin');
+        //var IntArr = megaSet.map(function (rec) { return rec.$id });
+        //var IntVec = new qm.la.IntVector(IntArr); console.log("Paper ID vector length: " + IntVec.length);
+        //IntVec.save(fout);
+        //fout.close();
         console.timeEnd("MegaSet");
         console.time("Update");
-        ftr.clear(); ftr.updateRecords(megaSet);
+        var finFtr = new qm.fs.openRead('./megaData/MegaFtr.bin');
+        ftr = new qm.FeatureSpace(base, finFtr);
+        //ftr.clear(); ftr.updateRecords(megaSet);
+        //var fout = new qm.fs.openWrite('./megaData/MegaFtr.bin');
+        //ftr.save(fout);
+        //fout.close();
         console.timeEnd("Update");
         
         // send the status to the client
+        console.time("MDS");
+        var finMDS = new qm.fs.openRead('./megaData/MegaMDS.bin');
+        var MDS = new algorithms.MDS(finMDS);
+        //var mat = ftr.extractSparseMatrix(megaSet);
+        //var MDS = new algorithms.MDS({ clusterN: 200, iter: 10 });
+        //MDS.constructClusters(mat);
+        //var fout = new qm.fs.openWrite('./megaData/MegaMDS.bin');
+        //MDS.save(fout);
+        //fout.close();
+        console.timeEnd("MDS");
+        console.time("Coord");
+        var finCoord = new qm.fs.openRead('./megaData/MegaCoord.bin');
+        var artCoord = new qm.la.Matrix(); artCoord.load(finCoord);
+        //var artCoord = MDS.getArticlesCoord(mat);
+        //var fout = new qm.fs.openWrite('./megaData/MegaCoord.bin');
+        //artCoord.save(fout);
+        //fout.close();
+        console.timeEnd("Coord");
         console.time("Points");
-        var mat = ftr.extractSparseMatrix(megaSet);
-        var MDS = new algorithms.MDS({ clusterN: 200, iter: 10 });
-        MDS.constructClusters(mat);
-        landscapeP = jsonify.landscapePoints({ matrix: MDS.getArticlesCoord(mat), records: megaSet });
+        landscapeP = jsonify.landscapePoints({ matrix: artCoord, records: megaSet });
         console.timeEnd("Points");
         console.time("Additional");
         // get the additional points
@@ -246,7 +271,6 @@ app.post('/datascience/landscape', function (request, response) {
         console.timeEnd("Additional");
         console.timeEnd("Landscape");
     } else {
-        // working on!!!
         console.time("Landscape");
         var articles = [];
         
@@ -283,16 +307,16 @@ app.post('/datascience/landscape', function (request, response) {
         console.timeEnd("Landscape");
     }
     
-        // get the clusters for the keywords, journals and conference position
-        var keywordsC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        var keywordsJson = jsonify.landscapeClusters(keywordsC);
-        
-        var journalsC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        var journalsJson = jsonify.landscapeClusters(journalsC);
-        
-        var conferencesC = new qm.la.Matrix({ rows: 2, cols: 600, random: true });
-        var conferencesJson = jsonify.landscapeClusters(conferencesC);
-    //}
+    // get the clusters for the keywords, journals and conference position
+    var keywordsC = new qm.la.Matrix({ rows: 2, cols: 800, random: true });
+    var keywordsJson = jsonify.landscapeClusters(keywordsC);
+    
+    var journalsC = new qm.la.Matrix({ rows: 2, cols: 200, random: true });
+    var journalsJson = jsonify.landscapeClusters(journalsC);
+    
+    var conferencesC = new qm.la.Matrix({ rows: 2, cols: 200, random: true });
+    var conferencesJson = jsonify.landscapeClusters(conferencesC);
+    
     // store the data and send it
     data = {
         points: {

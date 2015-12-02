@@ -161,298 +161,60 @@ function toggleAdditional() {
  * Advance search: 
  * keywords
  */ 
-$(function () { 
+var advanceSearch = function (domTag) {
     // initialize the keyword autocomplete
-    $("#advance_keywords").tokenfield({
+    $(domTag).tokenfield({
         autocomplete: {
             source: [],
             delay: 0
         }
     });
     // update the autocomplete when typing in
-    $("#advance_keywords-tokenfield").on("input", function () {
+    $(domTag + "-tokenfield").on("input", function () {
         var tag = $(this).val();
         window.clearTimeout(autoCompleteTimeout);
         autoCompleteTimeout = window.setTimeout(function () {
             if (tag.length < 2) {
                 return;
             }
-            $.ajax({
-                type: 'POST',
-                url: 'autocomplete',
-                data: {  value: tag, search: "keywords" },
-                success: function (data) {
-                    console.log("Success");
-                    var autocompleteKeywords = data;
-                    $("#advance_keywords").data('bs.tokenfield').$input.autocomplete({
-                        source: autocompleteKeywords,
-                    });
-                    // trigger arrow key press
-                    var e = $.Event("keydown");
-                    e.which = 40;                       // down key press
-                    $("#advance_keywords-tokenfield").trigger(e);
-                }
-            });
-        }, 400)
-    });
-    // if the token already exists, do nothing
-    $("#advance_keywords").on('tokenfield:createtoken', function (event) {
-        var existingTokens = $(this).tokenfield('getTokens');
-        $.each(existingTokens, function (index, token) {
-            if (token.value === event.attrs.value) {
-                $(".token-input").val("");
-                event.preventDefault();
-            }
-        });
-    });
-    // if the tag is clicked, remove it
-    $("#advance_keywords").on('tokenfield:createdtoken', function (event) {
-        // hide the remove (x) icon
-        $(event.relatedTarget).find("a").hide();
-        // on hover show the remove (x) icon
-        $(event.relatedTarget).hover(
-            function () { $(this).find("a").show(200); },
-            function () { $(this).find("a").hide(200); }
-        );
-        // on click the DOM is removed
-        $(event.relatedTarget).click(function () {
-            $(this).remove();
-        })
-    });
-});
-
-/**
- * Advance search: 
- * authors
- */ 
-$(function () {
-    // initialize the keyword autocomplete
-    $("#advance_authors").tokenfield({
-        autocomplete: {
-            source: [],
-            delay: 0
-        }
-    });
-    // update the autocomplete when typing in
-    $("#advance_authors-tokenfield").on("input", function () {
-        var tag = $(this).val();
-        window.clearTimeout(autoCompleteTimeout);
-        autoCompleteTimeout = window.setTimeout(function () {
-            if (tag.length < 2) {
-                return;
+            var search;
+            switch (domTag) {
+                case ("#advance_conferences"):
+                    search = "conferenceSeries";
+                    break;
+                case ("#advance_keywords"):
+                    search = "keywords";
+                    break;
+                case ("#advance_authors"):
+                    search = "authors";
+                    break;
+                case ("#advance_journals"):
+                    search = "journals";
+                    break;
+                case ("#advance_organizations"):
+                    search = "organizations";
+                    break;
             }
             $.ajax({
                 type: 'POST',
                 url: 'autocomplete',
-                data: {  value: tag, search: "authors" },
-                success: function (data) {
-                    var autocompleteAuthor = data;
-                    $("#advance_authors").data('bs.tokenfield').$input.autocomplete({
-                        source: autocompleteAuthor,
-                        delay: 0
-                    });
-                    // trigger arrow key press
-                    var e = $.Event("keydown");
-                    e.which = 40;                       // down key press
-                    $("#advance_authors-tokenfield").trigger(e);
-                }
-            });
-        }, 400)
-    });
-    // if the token already exists, do nothing
-    $("#advance_authors").on('tokenfield:createtoken', function (event) {
-        var existingTokens = $(this).tokenfield('getTokens');
-        $.each(existingTokens, function (index, token) {
-            if (token.value === event.attrs.value) {
-                $(".token-input").val("");
-                event.preventDefault();
-            }
-        });
-    });
-    // if the tag is clicked, remove it
-    $("#advance_authors").on('tokenfield:createdtoken', function (event) {
-        // hide the remove (x) icon
-        $(event.relatedTarget).find("a").hide();
-        // on hover show the remove (x) icon
-        $(event.relatedTarget).hover(
-            function () { $(this).find("a").show(200); },
-            function () { $(this).find("a").hide(200); }
-        );
-        // on click the DOM is removed
-        $(event.relatedTarget).click(function () {
-            $(this).remove();
-        })
-    });
-});
-
-/**
- * Advance search: 
- * journals
- */ 
-$(function () {
-    // initialize the keyword autocomplete
-    $("#advance_journals").tokenfield({
-        autocomplete: {
-            source: [],
-            delay: 0
-        }
-    });
-    // update the autocomplete when typing in
-    $("#advance_journals-tokenfield").on("input", function () {
-        var tag = $(this).val();
-        window.clearTimeout(autoCompleteTimeout);
-        autoCompleteTimeout = window.setTimeout(function () {
-            if (tag.length < 2) {
-                return;
-            }
-            $.ajax({
-                type: 'POST',
-                url: 'autocomplete',
-                data: { value: tag, search: "journals" },
-                success: function (data) {
-                    var autocompleteJournal = data;
-                    $("#advance_journals").data('bs.tokenfield').$input.autocomplete({
-                        source: autocompleteJournal,
-                        delay: 0
-                    });
-                    // trigger arrow key press
-                    var e = $.Event("keydown");
-                    e.which = 40;                       // down key press
-                    $("#advance_journals-tokenfield").trigger(e);
-                }
-            });
-        }, 400)
-    });
-    // if the token already exists, do nothing
-    $("#advance_journals").on('tokenfield:createtoken', function (event) {
-        var existingTokens = $(this).tokenfield('getTokens');
-        $.each(existingTokens, function (index, token) {
-            if (token.value === event.attrs.value) {
-                $(".token-input").val("");
-                event.preventDefault();
-            }
-        });
-    });
-    // if the tag is clicked, remove it
-    $("#advance_journals").on('tokenfield:createdtoken', function (event) {
-        // hide the remove (x) icon
-        $(event.relatedTarget).find("a").hide();
-        // on hover show the remove (x) icon
-        $(event.relatedTarget).hover(
-            function () { $(this).find("a").show(200); },
-            function () { $(this).find("a").hide(200); }
-        );
-        // on click the DOM is removed
-        $(event.relatedTarget).click(function () {
-            $(this).remove();
-        })
-    });
-});
-
-/**
- * Advance search: 
- * organizations
- */ 
-$(function () {
-    // initialize the keyword autocomplete
-    $("#advance_organizations").tokenfield({
-        autocomplete: {
-            source: [],
-            delay: 0
-        }
-    });
-    // update the autocomplete when typing in
-    $("#advance_organizations-tokenfield").on("input", function () {
-        var tag = $(this).val();
-        window.clearTimeout(autoCompleteTimeout);
-        autoCompleteTimeout = window.setTimeout(function () {
-            if (tag.length < 2) {
-                return;
-            }
-            $.ajax({
-                type: 'POST',
-                url: 'autocomplete',
-                data: { value: tag, search: "organizations" },
-                success: function (data) {
-                    var autocompleteOrganizations = data;
-                    $("#advance_organizations").data('bs.tokenfield').$input.autocomplete({
-                        source: autocompleteOrganizations,
-                        delay: 0
-                    });
-                    // trigger arrow key press
-                    var e = $.Event("keydown");
-                    e.which = 40;                       // down key press
-                    $("#advance_organizations-tokenfield").trigger(e);
-                }
-            });
-        }, 400)
-    });
-    // if the token already exists, do nothing
-    $("#advance_organizations").on('tokenfield:createtoken', function (event) {
-        var existingTokens = $(this).tokenfield('getTokens');
-        $.each(existingTokens, function (index, token) {
-            if (token.value === event.attrs.value) {
-                $(".token-input").val("");
-                event.preventDefault();
-            }
-        });
-    });
-    // if the tag is clicked, remove it
-    $("#advance_organizations").on('tokenfield:createdtoken', function (event) {
-        // hide the remove (x) icon
-        $(event.relatedTarget).find("a").hide();
-        // on hover show the remove (x) icon
-        $(event.relatedTarget).hover(
-            function () { $(this).find("a").show(200); },
-            function () { $(this).find("a").hide(200); }
-        );
-        // on click the DOM is removed
-        $(event.relatedTarget).click(function () {
-            $(this).remove();
-        })
-    });
-});
-
-/**
- * Advance search: 
- * organizations
- */ 
-$(function () {
-    // initialize the keyword autocomplete
-    $("#advance_conferences").tokenfield({
-        autocomplete: {
-            source: [],
-            delay: 0
-        }
-    });
-    // update the autocomplete when typing in
-    $("#advance_conferences-tokenfield").on("input", function () {
-        var tag = $(this).val();
-        window.clearTimeout(autoCompleteTimeout);
-        autoCompleteTimeout = window.setTimeout(function () {
-            if (tag.length < 2) {
-                return;
-            }
-            $.ajax({
-                type: 'POST',
-                url: 'autocomplete',
-                data: { value: tag, search: "conferenceSeries" },
+                data: { value: tag, search: search },
                 success: function (data) {
                     var autocompleteConferenceSeries = data;
-                    $("#advance_conferences").data('bs.tokenfield').$input.autocomplete({
+                    $(domTag).data('bs.tokenfield').$input.autocomplete({
                         source: autocompleteConferenceSeries,
                         delay: 0
                     });
                     // trigger arrow key press
                     var e = $.Event("keydown");
                     e.which = 40;                       // down key press
-                    $("#advance_conferences-tokenfield").trigger(e);
+                    $(domTag + "-tokenfield").trigger(e);
                 }
             });
         }, 400)
     });
     // if the token already exists, do nothing
-    $("#advance_conferences").on('tokenfield:createtoken', function (event) {
+    $(domTag).on('tokenfield:createtoken', function (event) {
         var existingTokens = $(this).tokenfield('getTokens');
         $.each(existingTokens, function (index, token) {
             if (token.value === event.attrs.value) {
@@ -462,7 +224,7 @@ $(function () {
         });
     });
     // if the tag is clicked, remove it
-    $("#advance_conferences").on('tokenfield:createdtoken', function (event) {
+    $(domTag).on('tokenfield:createdtoken', function (event) {
         // hide the remove (x) icon
         $(event.relatedTarget).find("a").hide();
         // on hover show the remove (x) icon
@@ -475,4 +237,12 @@ $(function () {
             $(this).remove();
         })
     });
-});
+}
+
+$(function () {
+    advanceSearch("#advance_keywords");
+    advanceSearch("#advance_authors");
+    advanceSearch("#advance_journals");
+    advanceSearch("#advance_organizations");
+    advanceSearch("#advance_conferences");
+})

@@ -16,19 +16,31 @@ var qm = require('qminer');
  * <br>_options.docTresh   - Document treshold, when to use largescale pipeline.
  */ 
 exports.MDS = function (_options) {
-    var options = _options == null ? {} : _options;
     // the parameters for the algorithms
-    var iter = options.iter == null ? 100 : options.iter;
-    var convexN = options.convexN == null ? 3 : options.convexN;
-    var clusterN = options.clusterN == null ? 200 : options.clusterN;
-    var docTresh = options.docTresh == null ? 200 : options.docTresh;
+    var iter, convexN, clusterN, docTresh;
+    // KMeans and KMeans coordinates container
+    var KCentr = new qm.la.Matrix({ rows: 10, cols: 30, random: true}), KCoord = new qm.la.Matrix({ rows: 10, cols: 30, random: true });
+    
+    if (_options != null && _options instanceof qm.fs.FIn) {
+        // parameter: input object
+        var FInParams = _options.readJson();
+        iter = FInParams.iter;
+        clusterN = FInParams.clusterN;
+        convexN = FInParams.convexN;
+        docTresh = FInParams.docTresh;
+        KCentr = new qm.la.Matrix(); KCentr.load(_options);
+        KCoord = new qm.la.Matrix(); KCoord.load(_options);
+    } else if (_options == null || typeof _options == 'object') {
+        // parameter: json object
+        iter = _options.iter == null ? 100 : _options.iter;
+        convexN = _options.convexN == null ? 3 : _options.convexN;
+        clusterN = _options.clusterN == null ? 200 : _options.clusterN;
+        docTresh = _options.docTresh == null ? 200 : _options.docTresh;
+    }
 
     // save the options
-    options = { iter: iter, clusterN: clusterN, convexN: convexN, docTresh: docTresh };
+    var options = { iter: iter, clusterN: clusterN, convexN: convexN, docTresh: docTresh };
     
-    // KMeans and KMeans coordinates container
-    var KCentr = null,
-        KCoord = null;
     
     /**
      * Gets the current options.
@@ -51,7 +63,7 @@ exports.MDS = function (_options) {
         convexN = _options.convexN == null ? options.convexN : _options.convexN;
         clusterN = _options.clusterN == null ? options.clusterN : _options.clusterN;
         docTresh = _options.docTresh == null ? options.docTresh : _options.docTresh;
-
+        
         // save the options
         options = { iter: iter, clusterN: clusterN, convexN: convexN, docTresh: docTresh };
     }
@@ -65,6 +77,18 @@ exports.MDS = function (_options) {
         return { centroids: KCentr, coord: KCoord };
     }
     
+    this.save = function (fout) {
+        if (!KCoord) { throw new Error("MDS.save: clusters not created yet!") }
+        fout.writeJson({
+            iter: iter, 
+            clusterN: clusterN, 
+            convexN: convexN, 
+            docTresh: docTresh
+        });
+        KCentr.save(fout);
+        KCoord.save(fout);
+        return fout;
+    }
     /**
      * Constructs the matrices and coordinates of the clusters (KCentr and KCoord).
      * @param {(module:la.Matrix | module:la.SparseMatrix)} mat - The feature matrix.
@@ -91,7 +115,6 @@ exports.MDS = function (_options) {
             V = svd.V.getColSubmatrix(qm.la.rangeVec(sId, k - 1)).transpose();
         } else {
             // if the matrix has alot of documents
-            // first step: get the KMeans vectors
             var kmeans = new qm.analytics.KMeans({ iter: iter, k: clusterN });
             kmeans.fit(mat);
             // save the centroids and create it's copy (normalized)
@@ -132,11 +155,10 @@ exports.MDS = function (_options) {
         
         // normalize the columns of mat
         var normMat = mat; normMat.normalizeCols();
-        
         // for each article get the distance to the clusters
         var distMat = KCentr.multiplyT(normMat);
         var newConvexN = distMat.cols < convexN ? distMat.cols : convexN;
-
+        
         for (var ColN = 0; ColN < distMat.cols; ColN++) {
             var column = distMat.getCol(ColN);
             var sortedCol = column.sortPerm(false);

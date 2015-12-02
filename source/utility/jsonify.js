@@ -62,18 +62,17 @@ exports.landscapeClusters = function (A) {
     for (var RowN = 0; RowN < points.rows; RowN++) {
         var docRow = points.getRow(RowN);
         var record = json.records[RowN];
-        debugger
         var title = record.title;
         var authors = record.hasAuthors.map(function (rec) { return rec.name; });
         var keywords = record.containsKeywords.map(function (rec) { return rec.name; });
         var journals = record.wasPublishedIn.map(function (rec) { return rec.name; });
-        //var conference = record.wasPresentedAt.map(function (rec) { return rec.name; });
+        var conference = record.wasPresentedAt != null ? record.wasPresentedAt.abbreviation.toUpperCase(): '';
         documentXY.push({
             title: title, 
             authors: authors, 
             keywords: keywords, 
             journals: journals,
-            //conference: conference, 
+            conference: conference, 
             x: xSquare(docRow.at(0)), 
             y: ySquare(docRow.at(1))
         });
@@ -109,8 +108,12 @@ var helperFunctions = {
     */
     linear : function (vec) {
         var m = helperFunctions.minmax(vec);
-        return function (t) {
-            return 1 / (m.max - m.min) * t - m.min / (m.max - m.min);
-        };
+        if (m.min == m.max) {
+            return function (t) { return 0.5; };
+        } else {
+            return function (t) {
+                return 1 / (m.max - m.min) * t - m.min / (m.max - m.min);
+            };
+        }
     }
 }

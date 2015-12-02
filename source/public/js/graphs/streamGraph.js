@@ -7,12 +7,12 @@
 function streamGraph(_options) {
     // settings
     var options = $.extend({
-        containerName: undefined,                                       // the dom that contains the svg element
-        scaleType: d3.scale.linear(),                                   // the scale type (d3.scale.linear(), d3.scale.ordinal(), d3.scale.log())
-        offsetType: "silhouette",                                       // the offset type ("zero", "wiggle", "silhouette", "expand")
-        xCoordinateType: "number",                                      // the type of the x coordinate ("number", "time")
-        interpolateType: "basis",                                       // the area interpolation type ("linear", "step", "basis", "cardinal", "monotone")
-        tooltipTextCallback: helperFunctions.tooltipTextCallbackStream, // the callback that generates the text info on the chart (defined at the end of the file)
+        containerName: undefined,                                        // the dom that contains the svg element
+        scaleType: d3.scale.linear(),                                    // the scale type (d3.scale.linear(), d3.scale.ordinal(), d3.scale.log())
+        offsetType: "zero",                                              // the offset type ("zero", "wiggle", "silhouette", "expand")
+        xCoordinateType: "number",                                       // the type of the x coordinate ("number", "time")
+        interpolateType: "cardinal",                                     // the area interpolation type ("linear", "step", "basis", "cardinal", "monotone")
+        tooltipTextCallback: SHelperFunctions.tooltipTextCallbackStream, // the callback that generates the text info on the chart (defined at the end of the file)
         margin: { top: 30, left: 30, bottom: 20, right: 30 },
         colors: d3.scale.category20()
     }, _options);
@@ -93,6 +93,8 @@ function streamGraph(_options) {
         var years = Object.keys(streamData.years);
         var min = Math.min.apply(null, years);
         var max = Math.max.apply(null, years);
+        // if min and max are the same
+        min -= 1; max += 1;
         return { minimum: min, maximum: max };
     }
     
@@ -139,6 +141,7 @@ function streamGraph(_options) {
             }
         }
         arr.push(paperArr);
+        global = arr;
         return arr;
     }
     
@@ -170,11 +173,10 @@ function streamGraph(_options) {
             xEnd = xminmax.maximum;
         if (xminmax.minimum < 1975) { xStart = 1975; } 
         else { xStart = xminmax.minimum; }
-        if (xStart == xEnd) { xStart -= 1; xEnd += 1; }
         
         // scale for the x axis
         xScale = options.scaleType;
-        xScale.domain([xStart, xEnd + 1])
+        xScale.domain([xStart, xEnd])
                 .range([0, width]);
         
         // axis format
@@ -360,7 +362,7 @@ function streamGraph(_options) {
  * @param {object} data - The json object containing the data of the keyword/author/journal.
  * @returns {string} The string for the appropriate data.
  */
-var helperFunctions = {
+var SHelperFunctions = {
     tooltipTextCallbackStream: function (data) {
         var dataInfo = data[0];        
         var text = "<p>";
