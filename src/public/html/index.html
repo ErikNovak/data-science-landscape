@@ -17,54 +17,54 @@
     <link rel="stylesheet" type="text/css" href="css/pages/search.css" />
     <link rel="stylesheet" type="text/css" href="css/graphs/graphs.css" />
 
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans|Ubuntu" rel="stylesheet">
+
     <title>DS Explorer</title>
 </head>
 <body>
     <!-- top navigation bar -->
-    <div class="container-fluid">
-        <div class="row">
 
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="container-fluid">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
 
-                    <!-- navbar header -->
-                    <div class="navbar-header">
-                        <h2 class="navbar-headliner">DS Explorer</h2>
-                    </div>
-                    <div class="logo">
-                        <span class="pull-right" style="display:block;margin-left:5px;">EUROPEAN<br><span style="white-space:nowrap">DATA SCIENCE</span><br>ACADEMY</span>
-                        <img class="pull-right" src="../pics/edsa-logo.png" style="height:73px;float:left;" />
-                    </div>
+                <!-- navbar header -->
+                <div class="navbar-header">
+                    <h2 class="navbar-headliner">DataScience Explorer</h2>
                 </div>
-            </nav> <!-- navbar-default -->
+            </div>
+        </nav> <!-- navbar-default -->
 
-        </div>
-    </div>
 
     <!-- search bar and buttons container -->
-    <div class="container-fluid  searchbar-container">
+    <div class="searchbar-container">
 
-        <div class="col-xs-11 col-sm-11 col-lg-11">
-            <input type="text" class="form-control searchbar" id="basic_searchbar" />
-        </div>
-
-        <div class="col-xs-1 col-sm-1 col-lg-1">
-
-            <button class="btn pull-right" style="display:none;" type="button" onclick="search.drawChart()">Search</button>
-
-            <div class="btn-group pull-right-right">
-                <button class="btn" type="button" onclick="toggleAdditional()">
-                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-value="right" id="options"></span>
-                </button>
+        <div class="container">
+            <div class="row">
+            <div class="col-xs-11 col-sm-11 col-lg-11">
+                <input type="text" class="form-control searchbar" id="basic_searchbar" />
             </div>
 
+            <div class="col-xs-1 col-sm-1 col-lg-1">
+                <button class="btn pull-right" style="display:none;" type="button" onclick="search.drawChart()">Search</button>
+
+                <div class="btn-group pull-right-right">
+                    <button class="btn" type="button" onclick="toggleAdditional()">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-value="right" id="options"></span>
+                    </button>
+                </div>
+
+            </div>
+            </div>
+            
         </div>
+        
 
     </div>
 
     <!-- advance search container -->
     <div class="form-horizontal  additional-options" style="display:none;">
+    <div class="container">
 
         <div class="form-group">
             <label class="col-xs-4 col-sm-3 col-lg-2 control-label">Search keywords:</label>
@@ -112,60 +112,82 @@
                 </div>
             </div>
         </div>
+    </div>
+        
 
     </div>
 
     <!-- Chart type container -->
-    <div class="container-fluid  graphtype-container graphtype-selector text-center">
-
+    <div class="container graphtype-container graphtype-selector text-center">
         Types of graphs:
-        <button class="btn" type="button" onclick="search.drawTimestreamChart();">
-            Timestream chart
-        </button>
+        <button class="btn" type="button" onclick="search.drawTimestreamChart();">Timestream chart</button>
         <div class="btn-group">
-            <button class="btn" type="button" id="academic-landscape" onclick="search.drawLandscape();">
-                Academic landscape
-            </button>
-            <button class="btn" type="button" id="whole-landscape" onclick="search.drawWholeLandscape();">
-                +
-            </button>
+            <button class="btn" type="button" id="academic-landscape" onclick="search.drawLandscape();">Academic landscape</button>
+            <button class="btn" type="button" id="whole-landscape" onclick="search.drawWholeLandscape();">+</button>
         </div>
-        <!--<div class="btn-group graphtype-selector">
-            <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <span id="graph-type">Academic landscape</span>
-                &nbsp;
-                <span class="caret"></span>
-            </button>
-
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-menu">
-                <li><a tabindex="-1" href="#">Timestream chart</a></li>
-                <li><a tabindex="-1" href="#">Academic landscape</a></li>
-            </ul>
-
-        </div>-->
     </div>
 
     <!-- graph container -->
-    <div class="container-fluid" style="padding-top:20px;">
-
+    <div class="container" style="padding-top:20px;">
         <!-- Wait container -->
         <div class="wait-content center-block" style="display:none;"></div>
-
-        <!-- Graph and utility -->
-        <div class="container-fluid full-page">
-            <div class="row">
-                <!-- chart options -->
-                <div class="col-md-2 chartOptions">
+    </div>
+    <!-- Graph and utility -->
+    <div class="container full-page">
+        <div class="row">
+            <!-- chart options -->
+            <div class="col-md-3 chartOptions">
+                <div class="form-inline">
                     <div class="form-inline">
+                        <div class="col-xs-8">
+                            <label><input type="checkbox" id="checkKeyword" checked="checked"> Keywords </label>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="fuelux">
+                                <div class="spinbox" id="spinKeyword">
+                                    <input type="text" class="form-control input-mini spinbox-input">
+                                    <div class="spinbox-buttons btn-group btn-group-vertical">
+                                        <button type="button" class="btn btn-default spinbox-up btn-xs">
+                                            <span class="glyphicon glyphicon-chevron-up"></span><span class="sr-only">Increase</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default spinbox-down btn-xs">
+                                            <span class="glyphicon glyphicon-chevron-down"></span><span class="sr-only">Decrease</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="col-xs-8">
+                            <label>
+                                <input type="checkbox" id="checkJournal" checked="checked"> Journals
+                            </label>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="fuelux">
+                                <div class="spinbox" id="spinJournal">
+                                    <input type="text" class="form-control input-mini spinbox-input">
+                                    <div class="spinbox-buttons btn-group btn-group-vertical">
+                                        <button type="button" class="btn btn-default spinbox-up btn-xs">
+                                            <span class="glyphicon glyphicon-chevron-up"></span><span class="sr-only">Increase</span>
+                                        </button>
+                                        <button type="button" class="btn btn-default spinbox-down btn-xs">
+                                            <span class="glyphicon glyphicon-chevron-down"></span><span class="sr-only">Decrease</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-inline">
                             <div class="col-xs-8">
                                 <label>
-                                    <input type="checkbox" id="checkKeyword" checked="checked"> Keywords
+                                    <input type="checkbox" id="checkConference" checked="checked"> Conferences
                                 </label>
                             </div>
                             <div class="col-xs-4">
                                 <div class="fuelux">
-                                    <div class="spinbox" id="spinKeyword">
+                                    <div class="spinbox" id="spinConference">
                                         <input type="text" class="form-control input-mini spinbox-input">
                                         <div class="spinbox-buttons btn-group btn-group-vertical">
                                             <button type="button" class="btn btn-default spinbox-up btn-xs">
@@ -179,75 +201,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-inline">
-                            <div class="col-xs-8">
-                                <label>
-                                    <input type="checkbox" id="checkJournal" checked="checked"> Journals
-                                </label>
-                            </div>
-                            <div class="col-xs-4">
-                                <div class="fuelux">
-                                    <div class="spinbox" id="spinJournal">
-                                        <input type="text" class="form-control input-mini spinbox-input">
-                                        <div class="spinbox-buttons btn-group btn-group-vertical">
-                                            <button type="button" class="btn btn-default spinbox-up btn-xs">
-                                                <span class="glyphicon glyphicon-chevron-up"></span><span class="sr-only">Increase</span>
-                                            </button>
-                                            <button type="button" class="btn btn-default spinbox-down btn-xs">
-                                                <span class="glyphicon glyphicon-chevron-down"></span><span class="sr-only">Decrease</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-inline">
-                                <div class="col-xs-8">
-                                    <label>
-                                        <input type="checkbox" id="checkConference" checked="checked"> Conferences
-                                    </label>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="fuelux">
-                                        <div class="spinbox" id="spinConference">
-                                            <input type="text" class="form-control input-mini spinbox-input">
-                                            <div class="spinbox-buttons btn-group btn-group-vertical">
-                                                <button type="button" class="btn btn-default spinbox-up btn-xs">
-                                                    <span class="glyphicon glyphicon-chevron-up"></span><span class="sr-only">Increase</span>
-                                                </button>
-                                                <button type="button" class="btn btn-default spinbox-down btn-xs">
-                                                    <span class="glyphicon glyphicon-chevron-down"></span><span class="sr-only">Decrease</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
 
-                        <!-- save buttons-->
-                        <div class="col-xs-12">
-                            <button class="btn" type="button" onclick="getPNGfromSVG()">
-                                <span class="glyphicon glyphicon-save" aria-hidden="true"></span> save png
-                            </button>
-                            <!--<button class="btn" type="button" onclick="getPDFfromSVG()">
-                                <span class="glyphicon glyphicon-save" aria-hidden="true"></span> save pdf
-                            </button>-->
-                        </div>
+                    <!-- save buttons-->
+                    <div class="col-xs-12">
+                        <button class="btn" type="button" onclick="getPNGfromSVG()">
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> save png
+                        </button>
                     </div>
                 </div>
-                <!-- graph container-->
-                <div class="col-md-10" id="graph-colChange">
-                    <div class="graph-content">
-                        <div class="graph-tooltip notvisible">
-                        </div>
-                    </div>
+            </div>
+            <!-- graph container-->
+            <div class="col-md-9" id="graph-colChange">
+                <div class="graph-content">
+                    <div class="graph-tooltip notvisible"></div>
                 </div>
             </div>
         </div>
     </div>
-
-
-
 
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary btn-lg hidden" id="modalTrigger" data-toggle="modal" data-target="#dataModal"></button>

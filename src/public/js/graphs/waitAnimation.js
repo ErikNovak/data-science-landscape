@@ -7,7 +7,7 @@ function waitAnimation(_options) {
     var options = $.extend({
         containerName: undefined,                                   // the dom that contains the svg element
         radius: { inner: 30, outer: 40 },                           // the inner and outer radius of the wait icon
-        color: { background: "#ddd", foreground: "#6375fc" }        // the background and foreground color of the wait icon
+        color: { background: "#DDD", foreground: "#0F1B07" }     // the background and foreground color of the wait icon
     }, _options);
     
     /**
@@ -92,8 +92,8 @@ function waitAnimation(_options) {
 }
 
 // create the wait animation
-$(function () {
+$(document).ready(function() {
     var options = { containerName: ".wait-content" };
     var wait = new waitAnimation(options);
     wait.displayAnimation();
-})
+});

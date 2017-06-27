@@ -7,8 +7,8 @@ var fs = qm.fs;
 
 var basePath = '../database/';
 // choose which Subset to load (Science or Regular) 
-var DataScienceSubset = true;
-var subset = DataScienceSubset ? "MicrosoftAcademicScienceSubset/" : "MicrosoftAcademicSubset/";
+var DataScienceSubset = false;
+var subset = DataScienceSubset ? "MicrosoftAcademicScienceSubset/" : "MicrosoftAcademicGraph/";
 
 // read the files
 var AffiliationsIn = new fs.FIn(basePath + subset + 'Affiliations.txt');

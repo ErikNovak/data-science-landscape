@@ -1,14 +1,20 @@
 ﻿
 .searchbar-container .tokenfield {
-    border-color: #6375fc;
+    border-color: #730000;
     border-width: 2px;
+    line-height: 1.2em;
+    border-radius: 0px;
+}
+
+.form-control {
+    border-radius: 0px;
 }
 
 .tokenfield .token {
     color: white;
-    height: 25px;
     text-align: center;
-    background-color: #6375fc;
+    background-color: #730000;
+    border-radius: 0px;
 }
 
 .tokenfield .token .token-label {
@@ -60,7 +66,7 @@
     padding-top:    20px;
     padding-bottom: 20px;
     font-size: 20px;
-    background-color: #BBB;
+    background-color: #FFFFFF;
 }
 
 .graphtype-selector .btn {
@@ -72,24 +78,23 @@
     text-align: center;
     margin-top:    40px;
     margin-bottom: 40px;
-    width:  100%;
-    height: 70%;
+    width:  600px;
+    height: 600px;
 }
 
 .graph-content {
     display: block;
     margin:  auto;
     position: relative;
-    width:    95%;
     height:   750px;
-    border-radius: 5px;
+    width: 100%;
+    border-radius: 0px;
     margin-bottom: 20px;
     
 }
 
 .full-page {
     position: relative;
-    width:      100%;
     height:     100%;
     min-height: 100%;
     margin-top:    20px;
@@ -108,6 +113,6 @@
     font-size: 14px;
 }
 
-.row{
-    overflow: hidden; 
+svg text {
+    cursor: default;
 }

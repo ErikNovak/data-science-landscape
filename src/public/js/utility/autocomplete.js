@@ -147,7 +147,7 @@ function toggleAdditional() {
     var button = $("#options");
     if (button.attr("data-value") == "right") {
         button.removeClass("glyphicon-chevron-right")
-            .addClass("glyphicon-chevron-down");
+              .addClass("glyphicon-chevron-down");
         button.attr("data-value", "down");
     } else if (button.attr("data-value") == "down") {
         button.removeClass("glyphicon-chevron-down")

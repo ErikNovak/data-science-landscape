@@ -8,12 +8,13 @@ function landscapeGraph(_options) {
     var options = $.extend({
         containerName: undefined,                                               // the dom that contains the svg element
         tooltipTextCallback: LHelperFunctions.tooltipTextCallbackLandscape,     // the callback that generates the text info on the chart (defined at the end of the file)
-        radius: { point: 2.5, hexagon: 5 },
+        radius: { point: 3, hexagon: 10 },
         margin: { top: 20, left: 20, bottom: 20, right: 20 },               
         color: {
-            shadeLight: "#A28DE6", shadeDark: "#4724B9",  
-            addShadeLight: "#FFEF6B", addShadeDark: "#FFE510",
-            background: "#260788", text: "#FFFFFF"
+            // good candidate
+            shadeLight:    "#B3DBD6", shadeDark:    "#52988E",  
+            addShadeLight: "#FA8D62", addShadeDark: "#FA8D62",
+            background:    "#FFFFFF", text:         "#2B616D"
         }
     }, _options);
     
@@ -104,10 +105,10 @@ function landscapeGraph(_options) {
         var svg = d3.select(options.containerName)
             .append("svg")
             .attr("id", "svg-container")
-            .attr("width", totalWidth)
-            .attr("height", totalHeight)
+            .attr("width", width)
+            .attr("height", height)
             .append("g")
-            .attr("transform", "translate(" + options.margin.left + ", " + options.margin.top + ")")
+            // .attr("transform", "translate(" + options.margin.left + ", " + options.margin.top + ")")
             .call(zoom);
         
         svg.append("rect")
@@ -143,14 +144,14 @@ function landscapeGraph(_options) {
         
         // the color scale for the shade / hexagons
         cShadowScale = d3.scale.log()
-            .domain([1, 5000])
-            .range([options.color.shadeDark, options.color.shadeLight])
+            .domain([1, landscapeData.main.length / 10])
+            .range([options.color.shadeLight, options.color.shadeDark])
             .interpolate(d3.interpolateLab);
         
         // the color scale for the additional points / hexagons
         cAddScale = d3.scale.log()
-            .domain([1, 5000])
-            .range([options.color.addShadeDark, options.color.addShadeLight])
+            .domain([1, landscapeData.main.length / 10])
+            .range([options.color.addShadeLight, options.color.addShadeDark])
             .interpolate(d3.interpolateLab);
         
         // zoom configurations
@@ -182,7 +183,7 @@ function landscapeGraph(_options) {
             chartBody.selectAll(".points")
                  .attr("cx", function (d) { return xScale(d.x); })
                  .attr("cy", function (d) { return yScale(d.y); })
-                 .attr("r", function (d) { return options.radius.point * d3.event.scale });
+                 .attr("r", function (d) { return options.radius.point * (d3.event.scale + 1) / 2 });
             
             // change the keywords position and the which are shown
             var keywordTags = chartBody.selectAll(".keyword")
@@ -263,7 +264,7 @@ function landscapeGraph(_options) {
                 .attr("cx", function (d) { return xScale(d.x); })
                 .attr("cy", function (d) { return yScale(d.y); })
                 .attr("r", options.radius.point)
-                .attr("fill", landscapeData.highlight.length != 0 ? options.color.addShadeLight : options.color.shadeLight);
+                .attr("fill", options.color.addShadeLight);
         
         /*
          * Sets the visibility of the keywords tags. If two are covering
@@ -306,7 +307,7 @@ function landscapeGraph(_options) {
             // get the points, that are close to the journals position 
             closePoints = $.grep(landscapeData.main, function (point) {
                 return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 30;
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 25;
             });
             if (closePoints.length == 0) { return; }
             // get the frequency of the journals
@@ -342,8 +343,9 @@ function landscapeGraph(_options) {
             }
         })
             .attr("font-size", $("#spinJournal input").val() + "px")
-            .attr("font-family", "sans-serif")
-            .attr("fill", "#FFFF00");
+            .attr("font-family", "PT Sans")
+            .attr("text-anchor", "middle")
+            .attr("fill", "#11333B");
         tagsVisibility(journalTags);
         
         // create the keyword tags
@@ -358,7 +360,7 @@ function landscapeGraph(_options) {
             // get the points, that are close to the keyword position 
             closePoints = $.grep(landscapeData.main, function (point) {
                 return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < (landscapeData.highlight.length != 0 ? 10 : 30);
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < (landscapeData.highlight.length != 0 ? 10 : 25);
             });
             if (closePoints.length == 0) { return; }
             
@@ -391,12 +393,14 @@ function landscapeGraph(_options) {
                 }
                 return topKeyword;
             } else {
-                return LHelperFunctions.getTag(keywordFrequency);
+                let reverseOrder = landscapeData.main.length > 1000 ? true : false;
+                return LHelperFunctions.getTag(keywordFrequency, reverseOrder);
             }
         })
             .attr("font-size", $("#spinKeyword input").val() + "px")
             .attr("font-weight", "bold")
-            .attr("font-family", "sans-serif")
+            .attr("text-anchor", "middle")
+            .attr("font-family", "Ubuntu")
             .attr("fill", options.color.text);
         tagsVisibility(keywordTags);
         
@@ -412,7 +416,7 @@ function landscapeGraph(_options) {
             // get the points, that are close to the conferences position 
             closePoints = $.grep(landscapeData.main, function (point) {
                 return Math.sqrt(Math.pow((xScale(d.x) - xScale(point.x)), 2) + 
-                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 20;
+                                Math.pow((yScale(d.y) - yScale(point.y)), 2)) < 25;
             });
             if (closePoints.length == 0) { return; }
             // get the frequency of the conferences
@@ -445,8 +449,9 @@ function landscapeGraph(_options) {
             return LHelperFunctions.getTag(conferenceFrequency);
         })
             .attr("font-size", $("#spinConference input").val() + "px")
-            .attr("font-family", "sans-serif")
-            .attr("fill", "#FF1800");
+            .attr("font-family", "PT Sans")
+            .attr("text-anchor", "middle")
+            .attr("fill", "#047F9C");
         tagsVisibility(conferenceSeriesTags);
         
         /**
@@ -464,11 +469,11 @@ function landscapeGraph(_options) {
             if (options.tooltipTextCallback) {
                 var tooltipDiv = $(options.containerName + " .graph-tooltip");
                 tooltipDiv.html(options.tooltipTextCallback(d));
-                var x = coords[0] + options.margin.left;
-                var y = coords[1] + options.margin.top;
+                var x = coords[0];
+                var y = coords[1];
                 var xOffset = (coords[0] > ($(options.containerName).width() / 2)) ? (-tooltipDiv.outerWidth() - 5) : 5;
                 var yOffset = (coords[1] > ($(options.containerName).height() / 2)) ? (-tooltipDiv.outerHeight() - 5) : 5;
-                var xAdditionalOffset = 10; // additional x offset
+                var xAdditionalOffset = 0; // additional x offset
                 var yAdditionalOffset = 0;  // additional y offset
                 tooltipDiv.css({ left: (x + xOffset + xAdditionalOffset) + "px", top: (y + yOffset + yAdditionalOffset) + "px" })
                     .removeClass("notvisible");
@@ -498,18 +503,13 @@ LHelperFunctions = {
         }
         text += "<br>";
         // the paper authors
-        text += "<b>Authors:</b>";
-        for (var AuthorN = 0; AuthorN < data.authors.length; AuthorN++) {
-            text += "<br>" + data.authors[AuthorN];
-        }
+        text += "<b>Authors:</b> " + data.authors.join(", ");
         return text;
     },
-    getTag : function (json) {
+    getTag : function (json, reverseOrder) {
         // create an array of key-values
         var jsonArr = [];
-        for (key in json) {
-            jsonArr.push([key, json[key]]);
-        }
+        for (key in json) { jsonArr.push([key, json[key]]); }
         jsonArr.sort(function (a, b) { return a[1] - b[1]; });
         // get the distribution of the values
         var distribution = [0, jsonArr[0][1]]; // add the biggest value
@@ -519,7 +519,8 @@ LHelperFunctions = {
         var diceToss = Math.floor(Math.random() * distribution[distribution.length - 1]);
         for (var i = 0; i < distribution.length - 1; i++) {
             if (distribution[i] <= diceToss && diceToss < distribution[i + 1]) {
-                return jsonArr[i][0];
+                var idx = reverseOrder ? jsonArr.length - 1 - i : i;
+                return jsonArr[idx][0];
             }
         }
     }

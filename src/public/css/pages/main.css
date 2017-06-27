@@ -5,13 +5,14 @@
 body {
     height: 100%;
     width: 100%;
-    background-color: #ffffff;
+    font-family: 'PT Sans', sans-serif;
+    background-color: #FFFFFF;
 }
 
 
 /* top navigation bar */
 .navbar-headliner {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-weight: 600;
     color: #730000;
 }
@@ -23,7 +24,7 @@ body {
 }
 
 .navbar-brand {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-weight: 900;
 }
 
@@ -32,7 +33,7 @@ body {
 }
 
 .navbar-default {
-    background-color: #fff;
+    background-color: #DDD;
     border-color: transparent;
 }
 
@@ -40,7 +41,8 @@ body {
     font-family:Baskerville, "Palatino Linotype", Palatino, "Century Schoolbook L", "Times New Roman", serif;
     color: #730000;
     font-weight: 900;
-    font-size: 16px;
+    font-size: 14px;
+    vertical-align: middle;
 }
 
 /* search bar */
@@ -50,27 +52,27 @@ body {
 }
 
 .searchbar {
-    border-color: #6375fc;
+    border-color: #730000;
     border-width: 2px;
+    border-radius: 0px;
 }
 
 
 /* buttons */
 .btn, .btn:focus, .btn:hover {
-    background-color: #6375fc;
+    background-color: #730000;
+    border: 0px solid transparent;
     color: #ffffff;
     font-weight: 400;
+    border-radius: 0px;
 }
+    .btn:focus, .btn:active { outline: none !important; }
+    .btn:active, .btn.active { color: #FFF; }
+    .btn:hover { background-color: #4D0000; }
 
-    .btn:active, .btn.active {
-        color: #FFF;
-    }
-
-    .btn:hover {
-        background-color: #808ffe;
-    }
+.form-control:focus, .form-control:active {
+    outline: none !important;
+}
 
 /* hidden */
-.hidden {
-    visibility:hidden;
-}
+.hidden { visibility:hidden; }

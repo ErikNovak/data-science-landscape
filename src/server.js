@@ -20,10 +20,6 @@ app.get('/', function (request, response) {
     response.sendFile(path.join(htmlPath, 'index.html'));
 });
 
-server.listen('3000', function () {
-    console.log("Listening port localhost:3000");
-});
-
 /**
  * QMiner database.
  * 
@@ -284,8 +280,7 @@ app.post('/datascience/landscape', function (request, response) {
         
         // update feature space
         console.time("Update Records");
-        ftr.clear();
-        ftr.updateRecords(megaSet);
+        ftr.clear(); ftr.updateRecords(megaSet);
         console.timeEnd("Update Records");
         
         console.time("Extract Features");
@@ -311,16 +306,16 @@ app.post('/datascience/landscape', function (request, response) {
     var keywordsC = new qm.la.Matrix({ rows: 2, cols: 800, random: true });
     var keywordsJson = jsonify.landscapeClusters(keywordsC);
     
-    var journalsC = new qm.la.Matrix({ rows: 2, cols: 200, random: true });
+    var journalsC = new qm.la.Matrix({ rows: 2, cols: 800, random: true });
     var journalsJson = jsonify.landscapeClusters(journalsC);
     
-    var conferencesC = new qm.la.Matrix({ rows: 2, cols: 200, random: true });
+    var conferencesC = new qm.la.Matrix({ rows: 2, cols: 800, random: true });
     var conferencesJson = jsonify.landscapeClusters(conferencesC);
     
     // store the data and send it
     data = {
         points: {
-            main: landscapeP,
+            main:      landscapeP,
             highlight: additionalP
         },
         clusters: {
@@ -370,4 +365,8 @@ process.on('SIGINT', function () {
     base.close();
     // exit the process
     process.exit();
+});
+
+server.listen('3000', function () {
+    console.log("Listening port localhost:3000");
 });

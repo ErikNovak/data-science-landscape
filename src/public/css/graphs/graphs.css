@@ -1,6 +1,6 @@
 ﻿#svg-container {
-    border-radius: 5px;
-    background-color: #F4F4F4;
+    border-radius: 0px;
+    background-color: #FFFFFF;
 }
 
 .graph-tooltip {
@@ -10,9 +10,9 @@
     height: auto;
     width: auto;
     padding: 3px 5px;
-    border-radius: 5px;
+    border-radius: 0px;
     max-width: 400px;
-    background-color: rgba(60,16,202, 0.8);
+    background-color: rgba(15,27,7, 0.8);
 }
 
 .notvisible {

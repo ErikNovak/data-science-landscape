@@ -1,8 +1,6 @@
 ﻿/**
  * Contains the classes for the construction of coordinates for the articles. 
- * 
  */
-
 var qm = require('qminer');
 
 /**
@@ -19,7 +17,8 @@ exports.MDS = function (_options) {
     // the parameters for the algorithms
     var iter, convexN, clusterN, docTresh;
     // KMeans and KMeans coordinates container
-    var KCentr = new qm.la.Matrix({ rows: 10, cols: 30, random: true}), KCoord = new qm.la.Matrix({ rows: 10, cols: 30, random: true });
+    var KCentr = new qm.la.Matrix({ rows: 10, cols: 30, random: true}), 
+        KCoord = new qm.la.Matrix({ rows: 10, cols: 30, random: true });
     
     if (_options != null && _options instanceof qm.fs.FIn) {
         // parameter: input object
@@ -32,15 +31,14 @@ exports.MDS = function (_options) {
         KCoord = new qm.la.Matrix(); KCoord.load(_options);
     } else if (_options == null || typeof _options == 'object') {
         // parameter: json object
-        iter = _options.iter == null ? 100 : _options.iter;
-        convexN = _options.convexN == null ? 3 : _options.convexN;
+        iter     = _options.iter     == null ? 100 : _options.iter;
+        convexN  = _options.convexN  == null ? 3   : _options.convexN;
         clusterN = _options.clusterN == null ? 200 : _options.clusterN;
         docTresh = _options.docTresh == null ? 200 : _options.docTresh;
     }
 
     // save the options
     var options = { iter: iter, clusterN: clusterN, convexN: convexN, docTresh: docTresh };
-    
     
     /**
      * Gets the current options.
@@ -59,8 +57,8 @@ exports.MDS = function (_options) {
             throw "Coordinates.setOptions: expecting a json object containing the options!";
         }
         // the parameters for the algorithms
-        iter = _options.iter == null ? options.iter : _options.iter;
-        convexN = _options.convexN == null ? options.convexN : _options.convexN;
+        iter     = _options.iter     == null ? options.iter     : _options.iter;
+        convexN  = _options.convexN  == null ? options.convexN  : _options.convexN;
         clusterN = _options.clusterN == null ? options.clusterN : _options.clusterN;
         docTresh = _options.docTresh == null ? options.docTresh : _options.docTresh;
         
@@ -106,9 +104,7 @@ exports.MDS = function (_options) {
                 // the sum of the first N singular values
                 var subSum = sing.subVec(qm.la.rangeVec(0, N)).sum();
                 // criteria
-                if (subSum / singSum > 0.8) {
-                    k = N; break;
-                }
+                if (subSum / singSum > 0.8) { k = N; break; }
             }
             // get the singular matrix of the rank k - 1
             var sId = k == 1 ? 0 : 1;
